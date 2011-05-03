@@ -49,7 +49,7 @@
 
 	isArray(object)
 
-	TODO: reduce, reduceRight?
+	TODO: reduce, reduceRight
 
  */
 
