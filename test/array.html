@@ -1,0 +1,184 @@
+<!DOCTYPE HTML>
+<html lang="en">
+
+<head>
+<title>array tests</title>
+
+<script>
+
+	curl = {
+		paths: {
+			poly: '../lib/poly',
+			array: '../lib/shims/array'
+		}
+	};
+
+</script>
+
+<script src="curl.js"></script>
+
+<script>
+
+	curl(['poly!array']).then(
+		function () {
+			runTests();
+		}
+	);
+
+	function runTests () {
+
+		var methodNames, testArray;
+
+		methodNames = {
+			forEach: 1,
+			map: 1,
+			every: 1,
+			some: 1,
+			indexOf: 1,
+			lastIndexOf: 1,
+			reduce: 1,
+			reduceRight: 1
+		};
+
+		testArray = [
+			0, 1, 2, 3,
+			"four",
+			{ five: 'five' },
+			0,
+			"seven"
+		];
+
+		// check for existence of array prototype methods
+		for (var m in methodNames) {
+			assertTrue(m + ' exists', function () {
+				return typeof [][m] == 'function';
+			});
+		}
+
+		// test forEach
+		assertTrue('forEach hits all items', function () {
+			var sum = 0;
+			testArray.forEach(function (item, i) {
+				sum |= Math.pow(2, i);
+			});
+			return sum == 0xff;
+		});
+		assertTrue('forEach applies context correctly', function () {
+			var context = { sum: 0 };
+			testArray.forEach(function (item, i) {
+				this.sum++;
+			}, context);
+			return context.sum == 8;
+		});
+
+		// test map and filter
+		assertTrue('map skips missing items in "sparse array"', function () {
+			var obj = {};
+			testArray.forEach(function (item, i) {
+				obj[i] = item;
+			});
+			delete obj[6];
+			return [].map.call(obj, function (item) {
+				return item.toString();
+			})[6] === undefined;
+		});
+		assertTrue('map processes all values', function () {
+			var strings = testArray.map(function (item) {
+				return item.toString();
+			});
+			return strings.every(function (item) {
+				return typeof item == 'string';
+			});
+		});
+		assertEquals('filter removes items', function () {
+			var filtered = testArray.filter(function (item) {
+				return typeof item == 'number';
+			});
+			return filtered.length;
+		}, 5);
+
+		// indexOf and lastIndexOf tests
+		assertEquals('indexOf finds item in first position', function () {
+			return testArray.indexOf(0);
+		}, 0);
+		assertEquals('indexOf finds item in last position', function () {
+			return testArray.indexOf('seven');
+		}, 7);
+		assertEquals('indexOf finds item from index', function () {
+			return testArray.indexOf(0, 3);
+		}, 6);
+		assertEquals('lastIndexOf finds item in first position', function () {
+			return testArray.lastIndexOf(0);
+		}, 6);
+		assertEquals('lastIndexOf finds item in last position', function () {
+			return testArray.lastIndexOf('seven');
+		}, 7);
+		assertEquals('lastIndexOf finds item from index', function () {
+			return testArray.lastIndexOf(0, 3);
+		}, 0);
+
+		// test isArray
+		assertTrue('Array.isArray on an array', function () {
+			return Array.isArray(testArray);
+		});
+		assertFalse('Array.isArray on a string', function () {
+			return Array.isArray('foo');
+		});
+		assertFalse('Array.isArray on an array-like object', function () {
+			var alo = {};
+			alo.length = 1;
+			alo['1'] = 1;
+			return Array.isArray(alo);
+		});
+
+		// TODO: test reduce and reduceRight
+
+	}
+
+	function assertEquals (name, test, value) {
+		return runTest(name, test, value);
+	}
+
+	function assertTrue (name, test) { return runTest(name, test, true); }
+
+	function assertFalse (name, test) { return runTest(name, test, false); }
+
+	function runTest (name, test, value) {
+
+		try {
+			var actual = test();
+			output(name, actual === value ? 'succeeded' : 
+				('failed: expected ' + value + ', got ' + actual + ' **********'));
+		}
+		catch (ex) {
+			fail(ex);
+		}
+	}
+
+	function fail (ex) {
+		output(ex.message);
+	}
+
+	function output () {
+		var logNode, args;
+		args = [].slice.call(arguments);
+		curl(['curl/domReady'], function () {
+			var msgNode, message;
+			logNode = logNode || document.getElementById('output');
+			msgNode = document.createElement('div');
+			message = args.join(' ');
+			msgNode.appendChild(document.createTextNode(message));
+			logNode.appendChild(msgNode);
+		});
+	}
+
+</script>
+
+</head>
+
+<body>
+
+<div id="output"></div>
+
+</body>
+</html>
