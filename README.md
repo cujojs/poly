@@ -1,6 +1,9 @@
 Code to modern standards -- or not
 =========
 
+version: 0.1
+License: MIT
+
 poly is a collection of AMD modules that can be used to work with old or new
 javascript engines in a uniform manner.
 
