@@ -97,6 +97,37 @@
 			return filtered.length;
 		}, 5);
 
+		//
+		// reduce tests
+		//
+		
+		// reduce helper
+		function sum(a, b) {
+			return a + b;
+		}
+		
+		// tests
+		assertEquals('reduce handles valid input', function() {
+			return [1,1,1].reduce(sum);
+		}, 3);
+		assertEquals('reduce handles valid input with initial value', function() {
+			return [1,1,1].reduce(sum, 1);
+		}, 4);
+		assertEquals('reduce handles sparse arrays', function() {
+			return [,1,,1,1].reduce(sum);
+		}, 3);
+		assertEquals('reduce returns initial value for empty array', function() {
+			return [].reduce(sum, 1);
+		}, 1);
+		assertTrue('reduce throws TypeError for empty array and no initial value', function() {
+			try {
+				[].reduce(sum);
+				return false;
+			} catch(e) {
+				return e instanceof TypeError;
+			}
+		});
+
 		// indexOf and lastIndexOf tests
 		assertEquals('indexOf finds item in first position', function () {
 			return testArray.indexOf(0);
