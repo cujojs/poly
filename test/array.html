@@ -19,6 +19,16 @@
 
 <script>
 
+// For testing in an ES env, remove shimmed methods first
+//    Array.prototype.forEach = null;
+//    Array.prototype.map = null;
+//    Array.prototype.every = null;
+//    Array.prototype.some = null;
+//    Array.prototype.indexOf = null;
+//    Array.prototype.lastIndexOf = null;
+//    Array.prototype.reduce = null;
+//    Array.prototype.reduceRight = null;
+
 	curl(['poly!array']).then(
 		function () {
 			runTests();
@@ -57,11 +67,18 @@
 
 		// test forEach
 		assertTrue('forEach hits all items', function () {
-			var sum = 0;
+			var expected, sum;
+            expected = 0;
+            sum = 0;
 			testArray.forEach(function (item, i) {
-				sum |= Math.pow(2, i);
+				sum += i;
 			});
-			return sum == 0xff;
+
+            for(var i=0; i<testArray.length; i++) {
+                expected += i;
+            }
+            
+			return expected === sum;
 		});
 		assertTrue('forEach applies context correctly', function () {
 			var context = { sum: 0 };
@@ -96,6 +113,69 @@
 			});
 			return filtered.length;
 		}, 5);
+
+		//
+		// reduce tests
+		//
+		
+		// reduce helper
+		function sum(a, b) {
+			return a + b;
+		}
+        
+        function sub(a, b) {
+            return a - b;
+        }
+		
+		// tests
+		assertEquals('reduce handles valid input', function() {
+			return [1,1,1].reduce(sum);
+		}, 3);
+        assertEquals('reduce is left to right', function() {
+            return [3,2,1].reduce(sub);
+        }, 0);
+		assertEquals('reduce handles valid input with initial value', function() {
+			return [1,1,1].reduce(sum, 1);
+		}, 4);
+		assertEquals('reduce handles sparse arrays', function() {
+			return [,1,,1,1].reduce(sum);
+		}, 3);
+		assertEquals('reduce returns initial value for empty array', function() {
+			return [].reduce(sum, 1);
+		}, 1);
+		assertTrue('reduce throws TypeError for empty array and no initial value', function() {
+			try {
+				[].reduce(sum);
+				return false;
+			} catch(e) {
+				return e instanceof TypeError;
+			}
+		});
+
+        // tests
+        assertEquals('reduceRight handles valid input', function() {
+            return [1,1,1].reduceRight(sum);
+        }, 3);
+        assertEquals('reduceRight is right to left', function() {
+            return [1,2,3].reduceRight(sub);
+        }, 0);
+        assertEquals('reduceRight handles valid input with initial value', function() {
+            return [1,1,1].reduceRight(sum, 1);
+        }, 4);
+        assertEquals('reduceRight handles sparse arrays', function() {
+            return [,1,,1,1].reduceRight(sum);
+        }, 3);
+        assertEquals('reduceRight returns initial value for empty array', function() {
+            return [].reduceRight(sum, 1);
+        }, 1);
+        assertTrue('reduceRight throws TypeError for empty array and no initial value', function() {
+            try {
+                [].reduceRight(sum);
+                return false;
+            } catch(e) {
+                return e instanceof TypeError;
+            }
+        });
 
 		// indexOf and lastIndexOf tests
 		assertEquals('indexOf finds item in first position', function () {
