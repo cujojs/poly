@@ -9,7 +9,7 @@
 	curl = {
 		paths: {
 			poly: '../lib/poly',
-			array: '../lib/shims/array'
+			'my': '../lib/shims'
 		}
 	};
 
@@ -20,16 +20,17 @@
 <script>
 
 // For testing in an ES env, remove shimmed methods first
-//    Array.prototype.forEach = null;
-//    Array.prototype.map = null;
-//    Array.prototype.every = null;
-//    Array.prototype.some = null;
-//    Array.prototype.indexOf = null;
-//    Array.prototype.lastIndexOf = null;
-//    Array.prototype.reduce = null;
-//    Array.prototype.reduceRight = null;
+    Array.prototype.forEach = null;
+    Array.prototype.map = null;
+    Array.prototype.every = null;
+    Array.prototype.some = null;
+    Array.prototype.indexOf = null;
+    Array.prototype.lastIndexOf = null;
+    Array.prototype.reduce = null;
+    Array.prototype.reduceRight = null;
+	delete Array.isArray;
 
-	curl(['poly!array']).then(
+	curl(['poly!my/array']).then(
 		function () {
 			runTests();
 		}
@@ -74,7 +75,7 @@
 				sum += i;
 			});
 
-            for(var i=0; i<testArray.length; i++) {
+            for (var i = 0; i < testArray.length; i++) {
                 expected += i;
             }
             
@@ -95,6 +96,7 @@
 				obj[i] = item;
 			});
 			delete obj[6];
+			obj.length = testArray.length;
 			return [].map.call(obj, function (item) {
 				return item.toString();
 			})[6] === undefined;
@@ -198,20 +200,18 @@
 		}, 0);
 
 		// test isArray
-		assertTrue('Array.isArray on an array', function () {
+		assertTrue('Array.isArray on an array is true', function () {
 			return Array.isArray(testArray);
 		});
-		assertFalse('Array.isArray on a string', function () {
+		assertFalse('Array.isArray on a string is false', function () {
 			return Array.isArray('foo');
 		});
-		assertFalse('Array.isArray on an array-like object', function () {
+		assertFalse('Array.isArray on an array-like object is false', function () {
 			var alo = {};
 			alo.length = 1;
 			alo['1'] = 1;
 			return Array.isArray(alo);
 		});
-
-		// TODO: test reduce and reduceRight
 
 	}
 
@@ -227,16 +227,16 @@
 
 		try {
 			var actual = test();
-			output(name, actual === value ? 'succeeded' : 
+			output(name + ':', actual === value ? 'succeeded' :
 				('failed: expected ' + value + ', got ' + actual + ' **********'));
 		}
 		catch (ex) {
-			fail(ex);
+			fail(name + ':' + 'exception thrown: ' + ex.message + ' **********');
 		}
 	}
 
-	function fail (ex) {
-		output(ex.message);
+	function fail (msg) {
+		output(msg);
 	}
 
 	function output () {
@@ -244,7 +244,7 @@
 		args = [].slice.call(arguments);
 		curl(['curl/domReady'], function () {
 			var msgNode, message;
-			logNode = logNode || document.getElementById('output');
+			logNode || (logNode = document.getElementById('output'));
 			msgNode = document.createElement('div');
 			message = args.join(' ');
 			msgNode.appendChild(document.createTextNode(message));
