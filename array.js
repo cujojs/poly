@@ -331,4 +331,6 @@ define(['./_base', 'exports'], function (base, exports) {
 		}
 	};
 
+    return exports;
+
 });

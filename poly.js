@@ -29,7 +29,6 @@ define(['exports'], function (exports) {
 			}
 		}
 
-
 		// load module
 		require([def], function (module) {
 
@@ -46,6 +45,8 @@ define(['exports'], function (exports) {
 
 		});
 
-	}
+	};
+
+    return exports;
 
 });

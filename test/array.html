@@ -7,9 +7,11 @@
 <script>
 
 	curl = {
+		debug: true,
+		baseUrl: '../',
+		pluginPath: null,
 		paths: {
-			poly: '../lib/poly',
-			'my': '../lib/shims'
+			poly: './poly'
 		}
 	};
 
@@ -19,7 +21,7 @@
 
 <script>
 
-// For testing in an ES env, remove shimmed methods first
+// For testing in an ES env, remove native methods first
     Array.prototype.forEach = null;
     Array.prototype.map = null;
     Array.prototype.every = null;
@@ -29,12 +31,6 @@
     Array.prototype.reduce = null;
     Array.prototype.reduceRight = null;
 	delete Array.isArray;
-
-	curl(['poly!my/array']).then(
-		function () {
-			runTests();
-		}
-	);
 
 	function runTests () {
 
@@ -242,14 +238,12 @@
 	function output () {
 		var logNode, args;
 		args = [].slice.call(arguments);
-		curl(['curl/domReady'], function () {
-			var msgNode, message;
-			logNode || (logNode = document.getElementById('output'));
-			msgNode = document.createElement('div');
-			message = args.join(' ');
-			msgNode.appendChild(document.createTextNode(message));
-			logNode.appendChild(msgNode);
-		});
+		var msgNode, message;
+		logNode || (logNode = document.getElementById('output'));
+		msgNode = document.createElement('div');
+		message = args.join(' ');
+		msgNode.appendChild(document.createTextNode(message));
+		logNode.appendChild(msgNode);
 	}
 
 </script>
@@ -261,4 +255,7 @@
 <div id="output"></div>
 
 </body>
+<script>
+	curl(['poly!array']).then(runTests);
+</script>
 </html>
