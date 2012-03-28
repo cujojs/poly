@@ -1,7 +1,7 @@
 Code to modern standards -- or not
 =========
 
-version: 0.1
+version: 0.2
 License: MIT
 
 poly is a collection of AMD modules that can be used to work with old or new
