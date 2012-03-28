@@ -11,9 +11,8 @@ Sounds like any other micro-framework, right?  Yah, I guess.  But poly has some
 unique features:
 
 1. poly is a set of AMD modules instead of a monolithic collection of functions
-2. poly (will soon have) a comprehensive suite of tests
-3. poly will work on just about every javascript-powered browser ever conceived
-4. poly's modules can be used as either "standardized" abstractions/wrappers or
+2. poly will work on just about every javascript-powered browser since IE5.5
+3. poly's modules can be used as either "standardized" abstractions/wrappers or
 as shims that add methods to native prototypes.  You choose.
 
 Examples
@@ -49,7 +48,7 @@ Using poly's modules as shims / polyfills:
 
 	// somewhere in your app's initialization code, load the "poly/array" module
 	// using the "poly!" plugin and it will shim the native Array prototype
-	require(["poly!poly/array"]);
+	curl({ preloads: [ "poly!poly/array" ] });
 
 	// later, just use arrays as if the js engine supports javascript 1.8!
 	define(/* my module */ function () {
