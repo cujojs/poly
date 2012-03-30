@@ -6,14 +6,15 @@
 
 <script>
 
-	curl = {
-		debug: true,
-		baseUrl: '../',
-		pluginPath: null,
-		paths: {
-			poly: './poly'
-		}
-	};
+curl = {
+	baseUrl: '../',
+	paths: {
+		curl: 'test/curl'
+	},
+	packages: [
+		{ name: 'poly', location: '.', main: 'poly' }
+	]
+};
 
 </script>
 
@@ -21,16 +22,45 @@
 
 <script>
 
-// For testing in an ES env, remove native methods first
-    Array.prototype.forEach = null;
-    Array.prototype.map = null;
-    Array.prototype.every = null;
-    Array.prototype.some = null;
-    Array.prototype.indexOf = null;
-    Array.prototype.lastIndexOf = null;
-    Array.prototype.reduce = null;
-    Array.prototype.reduceRight = null;
+var natives = {
+	forEach: Array.prototype.forEach,
+	map: Array.prototype.map,
+	every: Array.prototype.every,
+	some: Array.prototype.some,
+	indexOf: Array.prototype.indexOf,
+	lastIndexOf: Array.prototype.lastIndexOf,
+	reduce: Array.prototype.reduce,
+	reduceRight: Array.prototype.reduceRight
+};
+
+// First, test that poly!array doesn't clobber native methods
+curl(['poly!poly/array'], function () {
+
+	var test = " testString ";
+	// Note: these tests won't run in evirons that don't support .trim()
+	if (natives.forEach) {
+		for (var m in natives) {
+			assertFalse('shim doesn\'t clobber ' + m, function () { return test[m] == natives[m]; });
+		}
+	}
+
+}).next(['curl/_privileged'], function (priv) {
+
+	// remove poly/array from cache
+	delete priv.cache['poly!poly/array'];
+	delete priv.cache['poly/array'];
+	// For testing in an ES env, remove shimmed methods first
+	Array.prototype.forEach = null;
+	Array.prototype.map = null;
+	Array.prototype.every = null;
+	Array.prototype.some = null;
+	Array.prototype.indexOf = null;
+	Array.prototype.lastIndexOf = null;
+	Array.prototype.reduce = null;
+	Array.prototype.reduceRight = null;
 	delete Array.isArray;
+
+}).next(['poly!poly/array'], runTests);
 
 	function runTests () {
 
@@ -65,16 +95,16 @@
 		// test forEach
 		assertTrue('forEach hits all items', function () {
 			var expected, sum;
-            expected = 0;
-            sum = 0;
+			expected = 0;
+			sum = 0;
 			testArray.forEach(function (item, i) {
 				sum += i;
 			});
 
-            for (var i = 0; i < testArray.length; i++) {
-                expected += i;
-            }
-            
+			for (var i = 0; i < testArray.length; i++) {
+				expected += i;
+			}
+
 			return expected === sum;
 		});
 		assertTrue('forEach applies context correctly', function () {
@@ -115,23 +145,23 @@
 		//
 		// reduce tests
 		//
-		
+
 		// reduce helper
 		function sum(a, b) {
 			return a + b;
 		}
-        
-        function sub(a, b) {
-            return a - b;
-        }
-		
+
+		function sub(a, b) {
+			return a - b;
+		}
+
 		// tests
 		assertEquals('reduce handles valid input', function() {
 			return [1,1,1].reduce(sum);
 		}, 3);
-        assertEquals('reduce is left to right', function() {
-            return [3,2,1].reduce(sub);
-        }, 0);
+		assertEquals('reduce is left to right', function() {
+			return [3,2,1].reduce(sub);
+		}, 0);
 		assertEquals('reduce handles valid input with initial value', function() {
 			return [1,1,1].reduce(sum, 1);
 		}, 4);
@@ -150,30 +180,30 @@
 			}
 		});
 
-        // tests
-        assertEquals('reduceRight handles valid input', function() {
-            return [1,1,1].reduceRight(sum);
-        }, 3);
-        assertEquals('reduceRight is right to left', function() {
-            return [1,2,3].reduceRight(sub);
-        }, 0);
-        assertEquals('reduceRight handles valid input with initial value', function() {
-            return [1,1,1].reduceRight(sum, 1);
-        }, 4);
-        assertEquals('reduceRight handles sparse arrays', function() {
-            return [,1,,1,1].reduceRight(sum);
-        }, 3);
-        assertEquals('reduceRight returns initial value for empty array', function() {
-            return [].reduceRight(sum, 1);
-        }, 1);
-        assertTrue('reduceRight throws TypeError for empty array and no initial value', function() {
-            try {
-                [].reduceRight(sum);
-                return false;
-            } catch(e) {
-                return e instanceof TypeError;
-            }
-        });
+		// tests
+		assertEquals('reduceRight handles valid input', function() {
+			return [1,1,1].reduceRight(sum);
+		}, 3);
+		assertEquals('reduceRight is right to left', function() {
+			return [1,2,3].reduceRight(sub);
+		}, 0);
+		assertEquals('reduceRight handles valid input with initial value', function() {
+			return [1,1,1].reduceRight(sum, 1);
+		}, 4);
+		assertEquals('reduceRight handles sparse arrays', function() {
+			return [,1,,1,1].reduceRight(sum);
+		}, 3);
+		assertEquals('reduceRight returns initial value for empty array', function() {
+			return [].reduceRight(sum, 1);
+		}, 1);
+		assertTrue('reduceRight throws TypeError for empty array and no initial value', function() {
+			try {
+				[].reduceRight(sum);
+				return false;
+			} catch(e) {
+				return e instanceof TypeError;
+			}
+		});
 
 		// indexOf and lastIndexOf tests
 		assertEquals('indexOf finds item in first position', function () {
@@ -238,12 +268,14 @@
 	function output () {
 		var logNode, args;
 		args = [].slice.call(arguments);
-		var msgNode, message;
-		logNode || (logNode = document.getElementById('output'));
-		msgNode = document.createElement('div');
-		message = args.join(' ');
-		msgNode.appendChild(document.createTextNode(message));
-		logNode.appendChild(msgNode);
+		curl(['curl/domReady'], function () {
+			var msgNode, message;
+			logNode || (logNode = document.getElementById('output'));
+			msgNode = document.createElement('div');
+			message = args.join(' ');
+			msgNode.appendChild(document.createTextNode(message));
+			logNode.appendChild(msgNode);
+		});
 	}
 
 </script>
@@ -255,7 +287,4 @@
 <div id="output"></div>
 
 </body>
-<script>
-	curl(['poly!array']).then(runTests);
-</script>
 </html>

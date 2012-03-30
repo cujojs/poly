@@ -26,7 +26,7 @@ define (['./_base', 'exports'], function (base, exports) {
 	};
 
 	function has (feature) {
-		var prop = featureMap['function-' + feature];
+		var prop = featureMap[feature];
 		return base.isFunction(proto[prop]);
 	}
 
