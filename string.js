@@ -19,9 +19,9 @@ define (['./_base', 'exports'], function (base, exports) {
 		featureMap;
 
 	featureMap = {
-		'trim': 'trim',
-		'trimleft': 'trimLeft',
-		'trimright': 'trimRight'
+		'string-trim': 'trim',
+		'string-trimleft': 'trimLeft',
+		'string-trimright': 'trimRight'
 	};
 
 	function has (feature) {
