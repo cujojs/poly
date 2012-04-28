@@ -22,7 +22,7 @@ define (['./_base', 'exports'], function (base, exports) {
 		featureMap;
 
 	featureMap = {
-		'bind': 'bind'
+		'function-bind': 'bind'
 	};
 
 	function has (feature) {
