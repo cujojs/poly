@@ -12,7 +12,7 @@
 
 define(['exports'], function (exports) {
 
-	exports.version = '0.2.1';
+	exports.version = '0.2.2';
 
 	exports.load = function (def, require, onload, config) {
 
