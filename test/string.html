@@ -34,9 +34,9 @@ curl(['poly!poly/string'], function () {
 	var test = " testString ";
 	// Note: these tests won't run in evirons that don't support .trim()
 	if (natives.trim) {
-		assertFalse('shim doesn\'t clobber trim', function () { return test.trim == natives.trim; });
-		assertFalse('shim doesn\'t clobber trimLeft', function () { return test.trimLeft == natives.trimLeft; });
-		assertFalse('shim doesn\'t clobber trimRight', function () { return test.trimRight == natives.trimRight; });
+		assertTrue('shim doesn\'t clobber trim', function () { return test.trim == natives.trim; });
+		assertTrue('shim doesn\'t clobber trimLeft', function () { return test.trimLeft == natives.trimLeft; });
+		assertTrue('shim doesn\'t clobber trimRight', function () { return test.trimRight == natives.trimRight; });
 	}
 
 }).next(['curl/_privileged'], function (priv) {

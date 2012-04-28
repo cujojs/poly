@@ -32,7 +32,7 @@ curl(['poly!poly/function'], function () {
 	function test () {}
 	// Note: these tests won't run in evirons that don't support .trim()
 	if (natives.bind) {
-		assertFalse('shim doesn\'t clobber bind', function () { return test.bind == natives.bind; });
+		assertTrue('shim doesn\'t clobber bind', function () { return test.bind == natives.bind; });
 	}
 
 }).next(['curl/_privileged'], function (priv) {
