@@ -39,7 +39,7 @@ define (['./_base', 'exports'], function (base, exports) {
 			bound = function () {
 			  return self.apply(this instanceof nop ? this : (obj || {}), args.concat(slice.call(arguments)));
 			};
-		nop.prototype = this.prototype;
+		nop.prototype = this.prototype || {}; // Firefox cries sometimes if prototype is undefined
 		bound.prototype = new nop();
 		return bound;
 	}
