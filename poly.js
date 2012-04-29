@@ -37,7 +37,7 @@ define(['exports'], function (exports) {
 			try {
 				// augment native
 				if (module['polyfill']) {
-					module['polyfill']();
+					module['polyfill'](config);
 				}
 			}
 			catch (ex) {
