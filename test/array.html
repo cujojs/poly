@@ -37,10 +37,10 @@ var natives = {
 curl(['poly!poly/array'], function () {
 
 	var test = " testString ";
-	// Note: these tests won't run in evirons that don't support .trim()
+	// Note: these tests won't run in evirons that don't support .forEach()
 	if (natives.forEach) {
 		for (var m in natives) {
-			assertFalse('shim doesn\'t clobber ' + m, function () { return test[m] == natives[m]; });
+			assertTrue('shim doesn\'t clobber ' + m, function () { return test[m] == natives[m]; });
 		}
 	}
 

@@ -78,17 +78,16 @@ define(['./_base', 'exports'], function (base, exports) {
 		alreadyShimmed,
 		undef;
 
-	// DO NOT REMOVE QUOTES FROM NAMES! (closure compiler will clobber some!)
 	featureMap = {
-		'foreach': 'forEach',
-		'every': 'every',
-		'some': 'some',
-		'map': 'map',
-		'filter': 'filter',
-		'reduce': 'reduce',
-		'reduceright': 'reduceRight',
-		'indexof': 'indexOf',
-		'lastindexof': 'lastIndexOf'
+		'array-foreach': 'forEach',
+		'array-every': 'every',
+		'array-some': 'some',
+		'array-map': 'map',
+		'array-filter': 'filter',
+		'array-reduce': 'reduce',
+		'array-reduceright': 'reduceRight',
+		'array-indexof': 'indexOf',
+		'array-lastindexof': 'lastIndexOf'
 	};
 
 	function isArray (o) {
@@ -96,7 +95,7 @@ define(['./_base', 'exports'], function (base, exports) {
 	}
 
 	function has (feature) {
-		var prop = featureMap['array-' + feature];
+		var prop = featureMap[feature];
 		return base.isFunction(proto[prop]);
 	}
 
