@@ -36,7 +36,7 @@ var natives = {
 // First, test that poly!array doesn't clobber native methods
 curl(['poly!poly/array'], function () {
 
-	var test = " testString ";
+	var test = [];
 	// Note: these tests won't run in evirons that don't support .forEach()
 	if (natives.forEach) {
 		for (var m in natives) {

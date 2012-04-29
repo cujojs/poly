@@ -37,7 +37,7 @@ curl(['poly!poly/function'], function () {
 
 }).next(['curl/_privileged'], function (priv) {
 
-	// remove poly/string from cache
+	// remove poly/function from cache
 	delete priv.cache['poly!poly/function'];
 	delete priv.cache['poly/function'];
 	// For testing in an ES env, remove shimmed methods first
@@ -71,9 +71,9 @@ curl(['poly!poly/function'], function () {
 		assertEquals('bind calls a native object\'s method in context', function () {
 			var aDate, toString;
 			aDate = new Date('1/1/2000');
-			toString = aDate.toString.bind(aDate);
+			toString = aDate.getDay.bind(aDate);
 			return toString();
-		}, new Date('1/1/2000').toString());
+		}, new Date('1/1/2000').getDay());
 
 	}
 
