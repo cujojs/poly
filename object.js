@@ -21,68 +21,85 @@
  * Also, these shims can't prevent writing to object properties.
  *
  * TODO: isExtensible and preventExtensions
- * TODO: devise shims for freeze, seal, etc.
- * TODO: resolve IE8's partial defineProperty impl (works for DOM nodes)
+ * TODO: devise workable shims? for freeze, seal, etc.
+ * TODO: resolve IE8's partial defineProperty impl? (works for DOM nodes)
  *
  */
 define(['./_base', 'exports'], function (base, exports) {
-	"use strict";
+"use strict";
 
 	var alreadyShimmed = false,
 		methods = {},
 		missing = {},
 		refObj = Object,
-		propRx = /^[^\-]*\-/;
+		getPrototypeOf,
+		featureMap,
+		squelchUnimplemented,
+		shouldSquelch;
 
-	function has (feature) {
-		var prop = feature.replace(propRx, '');
-		return prop in refObj;
+	getPrototypeOf = typeof {}.__proto__ == 'object'
+		? function (object) { return object.__proto__; }
+		: function (object) { return object.constructor.prototype; };
+
+	featureMap = {
+		'object-create': { prop: 'create', impl: create },
+		'object-freeze': { prop: 'freeze', impl: freeze },
+		'object-isfrozen': { prop: 'isFrozen', impl: isFrozen },
+		'object-seal': { prop: 'seal', impl: seal },
+		'object-issealed': { prop: 'isSealed', impl: isSealed },
+		'object-getprototypeof': { prop: 'getPrototypeOf', impl: getPrototypeOf },
+		'object-keys': { prop: 'keys', impl: keys },
+		'object-getownpropertynames': { prop: 'getOwnPropertyNames', impl: getOwnPropertyNames },
+		'object-defineproperty': { prop: 'defineProperty', impl: defineProperty },
+		'object-defineproperties': { prop: 'defineProperties', impl: defineProperties },
+		'object-isextensible': { prop: 'isExtensible', impl: isExtensible },
+		'object-preventextensions': { prop: 'preventExtensions', impl: preventExtensions },
+		'object-getownpropertydescriptor': { prop: 'getOwnPropertyDescriptor', impl: getOwnPropertyDescriptor }
+	};
+
+	squelchUnimplemented = /freeze|isfrozen|seal|issealed|getprototypeof|keys/;
+
+	shouldSquelch = RegexpShouldSquelch;
+
+	function RegexpShouldSquelch (feature) {
+		return squelchUnimplemented.test(feature);
 	}
 
-	function F (props) {
-		for (var p in props) {
-			if (props.hasOwnProperty(p)) {
-				this[p] = props[p];
-			}
+	function createSquelcher (feature) {
+		return function () {
+			throw new Error('poly/object: ' + feature + ' not supported.');
 		}
 	}
 
-	function create (prototype, props) {
-		F.prototype = prototype;
-		return new F(props);
+	function has (feature) {
+		var prop = featureMap[feature];
+		return prop in refObj;
 	}
 
-	var getPrototypeOf = {}.__proto__ ?
-		function (object) {
-			return object.__proto__;
-		} :
-		function (object) {
-			return object.constructor.prototype;
-		};
+	function PolyBase () {}
+
+	function create (prototype, props) {
+		var obj;
+		if (arguments.length > 1) createSquelcher('object-create')();
+		PolyBase.prototype = prototype;
+		obj = new PolyBase(props);
+		PolyBase.prototype = null;
+		return obj;
+	}
 
 	function freeze (object) {
-		// TODO: implement shim
-		//object.__poly.extensible = false;
-		//object.__poly.writable = false;
 		return object;
 	}
 
 	function isFrozen (object) {
-		// TODO: implement shim
-		//return !object.__poly.extensible && !object.__poly.writable;
 		return false;
 	}
 
 	function seal (object) {
-		// TODO: implement shim
-		//object.__poly.extensible = false;
-		//object.__poly.configurable = false;
 		return object;
 	}
 
 	function isSealed (object) {
-		// TODO: implement shim
-		//return !object.__poly.extensible && !object.__poly.configurable;
 		return false;
 	}
 
@@ -101,21 +118,28 @@ define(['./_base', 'exports'], function (base, exports) {
 	}
 
 	function getOwnPropertyNames (object) {
-		return _getPropsArray(object, false);
+		return _getPropsArray(object, true);
 	}
 
 	function defineProperty(object, name, descriptor) {
-		// TODO: implement shim
 		object[name] = descriptor && descriptor.value;
 		return object;
 	}
 
 	function defineProperties(object, descriptors) {
 		var i = 0,
-			names = (Object.getOwnPropertyNames || getOwnPropertyNames)(descriptors);
+			names = keys(descriptors);
 		for (; i < names.length; i++) {
 			defineProperty(object, names[i], descriptors[names[i]]);
 		}
+		return object;
+	}
+
+	function isExtensible (object) {
+		return false;
+	}
+
+	function preventExtensions (object) {
 		return object;
 	}
 
@@ -128,55 +152,73 @@ define(['./_base', 'exports'], function (base, exports) {
 		};
 	}
 
-	// check for missing features
-	methods.create = create;
+	function createShims (squelched) {
+
+		// first convert squelched to a function
+		if (typeof squelched == 'string' || squelched instanceof String) {
+			squelched = new RegExp(squelched);
+		}
+		if (squelched instanceof RegExp) {
+			squelchUnimplemented = squelched;
+			shouldSquelch = RegexpShouldSquelch;
+		}
+		else if (typeof squelched == 'function') {
+			shouldSquelch = squelched;
+		}
+
+		// create shims for missing features
+		for (var feature in featureMap) {
+			var def = featureMap[feature];
+			methods[def.prop] = shouldSquelch(feature) ? createSquelcher(feature) : def.impl;
+			if (missing[def.prop]) {
+				missing[def.prop] = methods[def.prop];
+			}
+		}
+
+	}
+
+	// don't attempt to meta-program the following since has
+	// processors need them to be explicit
 	if (!has('object-create')) {
-		missing.create = create;
+		missing.create = methods.create;
 	}
-	methods.freeze = freeze;
 	if (!has('object-freeze')) {
-		missing.freeze = freeze;
+		missing.freeze = methods.freeze;
 	}
-	methods.isFrozen = isFrozen;
-	if (!has('object-isFrozen')) {
-		missing.isFrozen = isFrozen;
+	if (!has('object-isfrozen')) {
+		missing.isFrozen = methods.isFrozen;
 	}
-	methods.seal = seal;
 	if (!has('object-seal')) {
-		missing.seal = seal;
+		missing.seal = methods.seal;
 	}
-	methods.isSealed = isSealed;
-	if (!has('object-isSealed')) {
-		missing.isSealed = isSealed;
+	if (!has('object-issealed')) {
+		missing.isSealed = methods.isSealed;
 	}
-	methods.getPrototypeOf = getPrototypeOf;
-	if (!has('object-getPrototypeOf')) {
-		missing.getPrototypeOf = getPrototypeOf;
+	if (!has('object-getprototypeof')) {
+		missing.getPrototypeOf = methods.getPrototypeOf;
 	}
-	methods.keys = keys;
 	if (!has('object-keys')) {
-		missing.keys = keys;
+		missing.keys = methods.keys;
 	}
-	methods.getOwnPropertyNames = getOwnPropertyNames;
-	if (!has('object-getOwnPropertyNames')) {
-		missing.getOwnPropertyNames = getOwnPropertyNames;
+	if (!has('object-getownpropertynames')) {
+		missing.getOwnPropertyNames = methods.getOwnPropertyNames;
 	}
-	methods.defineProperty = defineProperty;
-	if (!has('object-defineProperty')) {
-		missing.defineProperty = defineProperty;
+	if (!has('object-defineproperty')) {
+		missing.defineProperty = methods.defineProperty;
 	}
-	methods.defineProperties = defineProperties;
-	if (!has('object-defineProperties')) {
-		missing.defineProperties = defineProperties;
+	if (!has('object-defineproperties')) {
+		missing.defineProperties = methods.defineProperties;
 	}
-	methods.getOwnPropertyDescriptor = getOwnPropertyDescriptor;
-	if (!has('object-getOwnPropertyDescriptor')) {
-		missing.getOwnPropertyDescriptor = getOwnPropertyDescriptor;
+	if (!has('object-getownpropertydescriptor')) {
+		missing.getOwnPropertyDescriptor = methods.getOwnPropertyDescriptor;
 	}
+
+	createShims();
 
 	base.addWrappers(methods, Object, exports);
 
-	exports['polyfill'] = function () {
+	exports['polyfill'] = function (config) {
+		if (config.squelchUnimplemented) createShims(config.squelchUnimplemented);
 		if (!alreadyShimmed) {
 			alreadyShimmed = true;
 			base.addShims(missing, refObj);
@@ -184,3 +226,14 @@ define(['./_base', 'exports'], function (base, exports) {
 	};
 
 });
+
+/*
+var O = Object;
+function P (value) {
+    return O.call(this, value);
+}
+Object = P;
+
+new Object(5);
+
+	*/
