@@ -22,10 +22,6 @@ curl = {
 
 <script>
 
-var natives = {
-	XMLHttpRequest: typeof XMLHttpRequest != 'undefined' && XMLHttpRequest
-};
-
 // First, test that poly!string doesn't clobber native methods
 curl(['test/testutils', 'poly!poly/xhr'], function (tester) {
 
