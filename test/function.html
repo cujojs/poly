@@ -27,12 +27,12 @@ var natives = {
 };
 
 // First, test that poly!string doesn't clobber native methods
-curl(['poly!poly/function'], function () {
+curl(['test/testutils', 'poly!poly/function'], function (tester) {
 
 	function test () {}
 	// Note: these tests won't run in evirons that don't support .trim()
 	if (natives.bind) {
-		assertTrue('shim doesn\'t clobber bind', function () { return test.bind == natives.bind; });
+		tester.assertTrue('shim doesn\'t clobber bind', function () { return test.bind == natives.bind; });
 	}
 
 }).next(['curl/_privileged'], function (priv) {
@@ -43,10 +43,10 @@ curl(['poly!poly/function'], function () {
 	// For testing in an ES env, remove shimmed methods first
 	delete Function.prototype.bind;
 
-}).next(['poly!poly/function'], runTests);
+}).next(['test/testutils', 'poly!poly/function'], runTests);
 
 
-	function runTests () {
+	function runTests (tester) {
 
 		function test () { return this.a; }
 
@@ -56,62 +56,25 @@ curl(['poly!poly/function'], function () {
 
 		// check for existence of string prototype methods
 		for (var m in natives) {
-			assertTrue(m + ' exists', function () {
+			tester.assertTrue(m + ' exists', function () {
 				return typeof test[m] == 'function';
 			});
 		}
 
 		// test bind
-		assertEquals('bind calls a function in context', function () {
+		tester.assertEquals('bind calls a function in context', function () {
 			return test.bind({ a: 42 })();
 		}, 42);
-		assertEquals('bind calls a method in context', function () {
+		tester.assertEquals('bind calls a method in context', function () {
 			return method.bind({ a: 42 })();
 		}, 42);
-		assertEquals('bind calls a native object\'s method in context', function () {
+		tester.assertEquals('bind calls a native object\'s method in context', function () {
 			var aDate, toString;
 			aDate = new Date('1/1/2000');
 			toString = aDate.getDay.bind(aDate);
 			return toString();
 		}, new Date('1/1/2000').getDay());
 
-	}
-
-	function assertEquals (name, test, value) {
-		return runTest(name, test, value);
-	}
-
-	function assertTrue (name, test) { return runTest(name, test, true); }
-
-	function assertFalse (name, test) { return runTest(name, test, false); }
-
-	function runTest (name, test, value) {
-
-		try {
-			var actual = test();
-			output(name + ':', actual === value ? 'succeeded' :
-				('failed: expected <<' + value + '>>, got <<' + actual + '>> **********'));
-		}
-		catch (ex) {
-			fail(name + ':' + 'exception thrown: ' + ex.message + ' **********');
-		}
-	}
-
-	function fail (msg) {
-		output(msg);
-	}
-
-	function output () {
-		var logNode, args;
-		args = [].slice.call(arguments);
-		curl(['curl/domReady'], function () {
-			var msgNode, message;
-			logNode || (logNode = document.getElementById('output'));
-			msgNode = document.createElement('div');
-			message = args.join(' ');
-			msgNode.appendChild(document.createTextNode(message));
-			logNode.appendChild(msgNode);
-		});
 	}
 
 </script>
