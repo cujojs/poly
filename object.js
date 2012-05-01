@@ -62,7 +62,7 @@ define(['./_base', 'exports'], function (base, exports) {
 		return failTestRx.test(feature);
 	}
 
-	function createThrower (feature) {
+	function createFlameThrower (feature) {
 		return function () {
 			throw new Error('poly/object: ' + feature + ' not supported.');
 		}
@@ -175,7 +175,7 @@ define(['./_base', 'exports'], function (base, exports) {
 		for (var feature in featureMap) {
 			var def = featureMap[feature];
 			if (missing[def.prop] && shouldThrow(feature)) {
-				missing[def.prop] = createThrower(feature);
+				missing[def.prop] = createFlameThrower(feature);
 			}
 		}
 
@@ -241,14 +241,3 @@ define(['./_base', 'exports'], function (base, exports) {
 	};
 
 });
-
-/*
-var O = Object;
-function P (value) {
-    return O.call(this, value);
-}
-Object = P;
-
-new Object(5);
-
-	*/
