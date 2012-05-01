@@ -1,24 +1,87 @@
-Code to modern standards -- or not
+Code to modern standards -- or not. you pick.
 =========
 
-version: 0.2.1
+version: 0.3
 License: MIT
 
-poly is a collection of AMD modules that can be used to work with old or new
-javascript engines in a uniform manner.
+poly is a collection of AMD modules that can be used to polyfill (aka "shim")
+old browsers to support modern javascript methods.  You can use poly's modules
+to augment native objects or use them as standardized wrapper functions.
 
-Sounds like any other micro-framework, right?  Yah, I guess.  But poly has some
-unique features:
+You choose how you want to use poly by how you load the modules.
 
-1. poly is a set of AMD modules instead of a monolithic collection of functions
-2. poly will work on just about every javascript-powered browser since IE5.5
-3. poly's modules can be used as either "standardized" abstractions/wrappers or
-as shims that add methods to native prototypes.  You choose.
+If you load the shims using the poly! plugin, they augment the native objects.
+If you load the shims directly, they are served as wrapper functions.
+
+poly augments browsers with all of the following features:
+
+poly/array:
+---
+
+* array.forEach
+* array.map
+* array.some
+* array.every
+* array.indexOf
+* array.lastIndexOf
+* array.reduce
+* array.reduceRight
+* Array.isArray
+
+poly/function:
+---
+
+* func.bind
+
+poly/json:
+---
+
+* (global) JSON
+
+poly/object:
+---
+
+* Object.create,
+* Object.freeze *,
+* Object.isFrozen *,
+* Object.seal *,
+* Object.isSealed *,
+* Object.getPrototypeOf,
+* Object.keys,
+* Object.getOwnPropertyNames,
+* Object.defineProperty *,
+* Object.defineProperties *,
+* Object.isExtensible *,
+* Object.preventExtensions *,
+* Object.getOwnPropertyDescriptor *
+
+Methods marked with * cannot be shimmed safely. You can decide whether these
+methods should fail silently or loudly.  Use the AMD config variable,
+"failIfShimmed" to determine which methods should fail loudly.
+
+"failIfShimmed" can be:
+
+* a boolean (all should fail)
+* a RegExp (matches on `("object-" + methodName).toLowerCase()`)
+* a string that can be converted to a RegExp
+* a function that takes a method name as a parameter and return truthy/falsey
+
+poly/string:
+---
+
+* string.trim
+* string.trimLeft
+* string.trimRight
+
+poly/xhr:
+---
+
+* (global) XMLHttpRequest
 
 Examples
 ==========
 
-Using poly's modules as "standardized" abstractions/wrappers:
+Using poly's modules as abstractions/wrappers:
 
 	// the AMD loader has been configured to point the "array" module id to
 	// "poly/array". You could later decide not to use poly and switch over to
