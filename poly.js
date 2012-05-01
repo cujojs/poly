@@ -33,17 +33,24 @@ define(['exports'], function (exports) {
 
 		// load module
 		require([def], function (module) {
+			var promise;
 
 			try {
 				// augment native
 				if (module['polyfill']) {
-					module['polyfill'](config);
+					promise = module['polyfill'](config);
 				}
 			}
 			catch (ex) {
 				fail(ex);
 			}
-			success(module);
+
+			if (promise && promise.then) {
+				promise.then(success, fail);
+			}
+			else {
+				success(module);
+			}
 
 		});
 

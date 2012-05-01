@@ -1,0 +1,65 @@
+<!DOCTYPE HTML>
+<html lang="en">
+
+<head>
+<title>xhr tests</title>
+
+<script>
+
+curl = {
+	baseUrl: '../',
+	paths: {
+		curl: 'test/curl',
+		js: 'test/curl/plugin/js'
+	},
+	packages: [
+		{ name: 'poly', location: '.', main: 'poly' }
+	]
+};
+
+</script>
+
+<script src="curl.js"></script>
+
+<script>
+
+// First, test that poly!string doesn't clobber native methods
+curl(['test/testutils', 'poly!poly/json'], function (tester) {
+
+	tester.assertTrue('JSON exists as global object', function () {
+		return typeof JSON == 'object';
+	});
+	tester.assertTrue('JSON.stringify converts to a string', function () {
+		return /^\{\s*"foo"\s*:\s*"bar"\s*\}$/.test(JSON.stringify({foo:'bar'}));
+	});
+	tester.assertTrue('JSON.parse converts from a string', function () {
+		var obj = JSON.parse('{"foo": "bar"}');
+		return obj.foo =='bar';
+	});
+
+}).next(['curl/_privileged'], function (priv) {
+
+	// remove JSON and poly/json
+	delete window.JSON;
+	delete priv.cache['poly!poly/json'];
+	delete priv.cache['poly/json'];
+
+}).next(['test/testutils', 'poly!poly/json'], function (tester) {
+console.log('asdfasdfasdf')
+		// test that the json2 impl is loaded if JSON is missing
+		tester.assertTrue('JSON global is added if missing', function () {
+			return !!window.JSON
+		});
+
+});
+
+</script>
+
+</head>
+
+<body>
+
+<div id="output"></div>
+
+</body>
+</html>
