@@ -34,8 +34,7 @@ define(['./_base', 'exports'], function (base, exports) {
 		refObj = Object,
 		getPrototypeOf,
 		featureMap,
-		squelchUnimplemented,
-		shouldSquelch;
+		failTestRx;
 
 	getPrototypeOf = typeof {}.__proto__ == 'object'
 		? function (object) { return object.__proto__; }
@@ -57,15 +56,13 @@ define(['./_base', 'exports'], function (base, exports) {
 		'object-getownpropertydescriptor': { prop: 'getOwnPropertyDescriptor', impl: getOwnPropertyDescriptor }
 	};
 
-	squelchUnimplemented = /freeze|isfrozen|seal|issealed|getprototypeof|keys/;
+	failTestRx = /^define|^isextensible|^prevent|descriptor$/;
 
-	shouldSquelch = RegexpShouldSquelch;
-
-	function RegexpShouldSquelch (feature) {
-		return squelchUnimplemented.test(feature);
+	function RegexpShouldThrow (feature) {
+		return failTestRx.test(feature);
 	}
 
-	function createSquelcher (feature) {
+	function createThrower (feature) {
 		return function () {
 			throw new Error('poly/object: ' + feature + ' not supported.');
 		}
@@ -80,10 +77,13 @@ define(['./_base', 'exports'], function (base, exports) {
 
 	function create (prototype, props) {
 		var obj;
-		if (arguments.length > 1) createSquelcher('object-create')();
 		PolyBase.prototype = prototype;
 		obj = new PolyBase(props);
 		PolyBase.prototype = null;
+		if (arguments.length > 1) {
+			// defineProperties could throw depending on `shouldThrow`
+			defineProperties(obj, props);
+		}
 		return obj;
 	}
 
@@ -136,7 +136,7 @@ define(['./_base', 'exports'], function (base, exports) {
 	}
 
 	function isExtensible (object) {
-		return false;
+		return true;
 	}
 
 	function preventExtensions (object) {
@@ -144,7 +144,7 @@ define(['./_base', 'exports'], function (base, exports) {
 	}
 
 	function getOwnPropertyDescriptor (object, name) {
-		return {
+		return object[name] && {
 			value: object[name],
 			enumerable: true,
 			configurable: true,
@@ -152,29 +152,38 @@ define(['./_base', 'exports'], function (base, exports) {
 		};
 	}
 
-	function createShims (squelched) {
+	function createShims (failTest) {
+		var shouldThrow;
 
-		// first convert squelched to a function
-		if (typeof squelched == 'string' || squelched instanceof String) {
-			squelched = new RegExp(squelched);
+		// first convert failTest to a function
+		if (typeof failTest == 'string' || failTest instanceof String) {
+			failTest = new RegExp(failTest);
 		}
-		if (squelched instanceof RegExp) {
-			squelchUnimplemented = squelched;
-			shouldSquelch = RegexpShouldSquelch;
+		if (failTest instanceof RegExp) {
+			failTestRx = failTest;
+			shouldThrow = RegexpShouldThrow;
 		}
-		else if (typeof squelched == 'function') {
-			shouldSquelch = squelched;
+		else if (typeof failTest == 'function') {
+			shouldThrow = failTest;
+		}
+		else {
+			// assume truthy/falsey
+			shouldThrow = function () { return failTest; };
 		}
 
-		// create shims for missing features
+		// create throwers for some features
 		for (var feature in featureMap) {
 			var def = featureMap[feature];
-			methods[def.prop] = shouldSquelch(feature) ? createSquelcher(feature) : def.impl;
-			if (missing[def.prop]) {
-				missing[def.prop] = methods[def.prop];
+			if (missing[def.prop] && shouldThrow(feature)) {
+				missing[def.prop] = createThrower(feature);
 			}
 		}
 
+	}
+
+	for (var feature in featureMap) {
+		var def = featureMap[feature];
+		methods[def.prop] = def.impl;
 	}
 
 	// don't attempt to meta-program the following since has
@@ -209,6 +218,12 @@ define(['./_base', 'exports'], function (base, exports) {
 	if (!has('object-defineproperties')) {
 		missing.defineProperties = methods.defineProperties;
 	}
+	if (!has('object-isextensible')) {
+		missing.isExtensible = methods.isExtensible;
+	}
+	if (!has('object-preventextensions')) {
+		missing.preventExtensions = methods.preventExtensions;
+	}
 	if (!has('object-getownpropertydescriptor')) {
 		missing.getOwnPropertyDescriptor = methods.getOwnPropertyDescriptor;
 	}
@@ -218,7 +233,7 @@ define(['./_base', 'exports'], function (base, exports) {
 	base.addWrappers(methods, Object, exports);
 
 	exports['polyfill'] = function (config) {
-		if (config.squelchUnimplemented) createShims(config.squelchUnimplemented);
+		if (config.failIfShimmed) createShims(config.failIfShimmed);
 		if (!alreadyShimmed) {
 			alreadyShimmed = true;
 			base.addShims(missing, refObj);
