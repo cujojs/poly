@@ -11,7 +11,10 @@
  */
 define(function (require, exports, module) {
 
-	var slice = [].slice;
+	var slice, toString;
+
+	slice = [].slice;
+	toString = ({}).toString;
 
 	function createWrapper (method) {
 		return function (refObj) {
@@ -40,6 +43,12 @@ define(function (require, exports, module) {
 		return typeof o == 'function';
 	};
 
+	exports.toString = function (o) {
+		return toString.apply(o);
+	};
 
+	exports.toObject = function (o) {
+		return toString(o) == '[Object String]' ? o.split('') : Object(o);
+	};
 
 });
