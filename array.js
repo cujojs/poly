@@ -73,6 +73,7 @@ define(['./_base', 'exports'], function (base, exports) {
 	var proto = Array.prototype,
 		toString = {}.toString,
 		featureMap,
+		toObject,
 		methods = {},
 		missing = {},
 		alreadyShimmed,
@@ -89,6 +90,14 @@ define(['./_base', 'exports'], function (base, exports) {
 		'array-indexof': 'indexOf',
 		'array-lastindexof': 'lastIndexOf'
 	};
+
+	toObject = base.createCaster(Object, 'Array');
+
+	function toArrayLike (o) {
+		return (base.toString(o) == '[object String]')
+			? o.split('')
+			: toObject(o);
+	}
 
 	function isArray (o) {
 		return toString.call(o) == '[object Array]';
@@ -113,18 +122,15 @@ define(['./_base', 'exports'], function (base, exports) {
 
 		var alo, len, i, end;
 
-		alo = Object(arr);
+		alo = toArrayLike(arr);
 		len = alo.length >>> 0;
 
 		if (start === undef) start = 0;
 		if (!inc) inc = 1;
 		end = inc < 0 ? -1 : len;
 
-		if (arr == undef) {
-			throw new TypeError('Array is undefined');
-		}
 		if (!base.isFunction(lambda)) {
-			throw new TypeError('Lambda is not callable');
+			throw new TypeError(lambda + ' is not a function');
 		}
 		if (start == end) {
 			return false;
@@ -227,7 +233,7 @@ define(['./_base', 'exports'], function (base, exports) {
 	function _reduce (reduceFunc, inc, initialValue, hasInitialValue) {
 		var reduced, startPos, initialValuePos;
 
-		startPos = initialValuePos = inc > 0 ? -1 : Object(this).length >>> 0;
+		startPos = initialValuePos = inc > 0 ? -1 : toArrayLike(this).length >>> 0;
 
 		// If no initialValue, use first item of array (we know length !== 0 here)
 		// and adjust i to start at second item
@@ -276,7 +282,7 @@ define(['./_base', 'exports'], function (base, exports) {
 	/***** finders *****/
 
 	function find (arr, item, from, forward) {
-		var len = Object(arr).length >>> 0, foundAt = -1;
+		var len = toArrayLike(arr).length >>> 0, foundAt = -1;
 
 		// convert to number, or default to start or end positions
 		from = isNaN(from) ? (forward ? 0 : len - 1) : Number(from);
