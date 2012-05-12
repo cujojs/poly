@@ -8,6 +8,18 @@
  * Licensed under the MIT License at:
  * 		http://www.opensource.org/licenses/mit-license.php
  *
+ *
+ * Adds str.trim(), str.trimRight(), and str.trimLeft()
+ *
+ * Note: we don't bother trimming all ES5 white-space characters
+ * by default since we'd have to shim _all browsers_ because (even as of
+ * April 2012) almost all of them don't trim all whitespace characters.
+ *
+ * For strict ES5 compliance in all browsers, set the AMD loader config option,
+ * `strictWhitespace`, to a truthy value.  Note: this option only works
+ * if you use poly to shim the String prototype, not if you use poly/string
+ * as a wrapper object.
+ *
  */
 define (['./_base', 'exports'], function (base, exports) {
 	"use strict";
@@ -16,7 +28,8 @@ define (['./_base', 'exports'], function (base, exports) {
 		methods = {},
 		missing = {},
 		proto = String.prototype,
-		featureMap;
+		featureMap,
+		toString;
 
 	featureMap = {
 		'string-trim': 'trim',
@@ -29,19 +42,28 @@ define (['./_base', 'exports'], function (base, exports) {
 		return base.isFunction(proto[prop]);
 	}
 
-	var trimRightRx = /\s+$/,
-		trimLeftRx = /^\s+/;
+	// compressibility helper
+	function remove (str, rx) {
+		return str.replace(rx, '');
+	}
+
+	toString = base.createCaster(String, 'String');
+
+	var whitespaceChars, trimRightRx, trimLeftRx;
+
+	trimRightRx = /\s+$/;
+	trimLeftRx = /^\s+/;
 
 	function trim () {
-		return this.trimLeft().trimRight();
+		return remove(remove(toString(this), trimLeftRx), trimRightRx);
 	}
 
 	function trimLeft () {
-		return this.replace(trimLeftRx, '');
+		return remove(toString(this), trimLeftRx);
 	}
 
 	function trimRight () {
-		return this.replace(trimRightRx, '');
+		return remove(toString(this), trimRightRx);
 	}
 
 	methods.trim = trim;
@@ -59,8 +81,14 @@ define (['./_base', 'exports'], function (base, exports) {
 
 	base.addWrappers(methods, proto, exports);
 
-	exports['polyfill'] = function () {
+	exports['polyfill'] = function (config) {
 		if (!alreadyShimmed) {
+			if (config.strictWhitespace) {
+				// from http://perfectionkills.com/whitespace-deviations/
+				whitespaceChars = '[\x09-\x0D\x20\xA0\u1680\u180E\u2000-\u200A\u202F\u205F\u3000\u2028\u2029]';
+				trimRightRx = new RegExp(whitespaceChars + '+$');
+				trimLeftRx = new RegExp('^+' + whitespaceChars);
+			}
 			base.addShims(missing, proto);
 			alreadyShimmed = true;
 		}
