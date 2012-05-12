@@ -49,7 +49,8 @@
  * isFrozen
  * isSealed
  *
- * TODO: resolve IE8's partial defineProperty impl? (works for DOM nodes)
+ * Note: this shim doesn't do anything special with IE8's minimally useful
+ * Object.defineProperty(domNode).
  *
  */
 define(['./_base', 'exports'], function (base, exports) {
@@ -127,7 +128,6 @@ define(['./_base', 'exports'], function (base, exports) {
 	}
 
 	function freeze (object) {
-		// TODO: determine if we need to fix Rhino bug: Object.freeze(function () {});
 		return object;
 	}
 
