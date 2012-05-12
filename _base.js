@@ -47,8 +47,11 @@ define(function (require, exports, module) {
 		return toString.apply(o);
 	};
 
-	exports.toObject = function (o) {
-		return toString(o) == '[Object String]' ? o.split('') : Object(o);
-	};
+	exports.createCaster = function (caster, name) {
+		return function cast (o) {
+			if (o == null) throw new TypeError(name + ' method called on null or undefined');
+			return caster(o);
+		}
+	}
 
 });
