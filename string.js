@@ -87,9 +87,10 @@ define (['./_base', 'exports'], function (base, exports) {
 				// from http://perfectionkills.com/whitespace-deviations/
 				whitespaceChars = '[\x09-\x0D\x20\xA0\u1680\u180E\u2000-\u200A\u202F\u205F\u3000\u2028\u2029]';
 				trimRightRx = new RegExp(whitespaceChars + '+$');
-				trimLeftRx = new RegExp('^+' + whitespaceChars);
+				trimLeftRx = new RegExp('^' + whitespaceChars + '+');
 			}
-			base.addShims(missing, proto);
+			// add all shims if strictWhitespace is specified
+			base.addShims(config.strictWhitespace ? methods : missing, proto);
 			alreadyShimmed = true;
 		}
 	};
