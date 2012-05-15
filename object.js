@@ -100,7 +100,7 @@ define(['./_base', 'exports'], function (base, exports) {
 
 	function has (feature) {
 		var prop = featureMap[feature];
-		return prop in refObj;
+		return prop && prop.prop in refObj;
 	}
 
 	function PolyBase () {}

@@ -24,6 +24,9 @@ curl = {
 
 /*
 		TODO: test feature to throw for faked methods: `config.failIfShimmed`
+
+		TODO: improved `getPrototypeOf`, `getOwnPropertyDescriptor`, and `create` compatibility; created real shim for `isExtensible`
+
  */
 
 
@@ -47,10 +50,9 @@ var natives = {
 // First, test that poly!array doesn't clobber native methods
 curl(['test/testutils', 'poly!poly/object'], function (tester) {
 
-	var test = {};
-	// Note: these tests won't run in evirons that don't support .forEach()
-	if (natives.forEach) {
-		for (var m in natives) {
+	var test = Object;
+	for (var m in natives) {
+		if (natives[m]) {
 			tester.assertTrue('shim doesn\'t clobber ' + m, function () { return test[m] == natives[m]; });
 		}
 	}
