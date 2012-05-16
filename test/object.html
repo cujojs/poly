@@ -25,8 +25,6 @@ curl = {
 /*
 		TODO: test feature to throw for faked methods: `config.failIfShimmed`
 
-		TODO: improved `getPrototypeOf`, `getOwnPropertyDescriptor`, and `create` compatibility; created real shim for `isExtensible`
-
  */
 
 
@@ -108,6 +106,10 @@ curl(['test/testutils', 'poly!poly/object'], function (tester) {
 				child = Object.create(parent, descriptor);
 			return child.readonly == 'some value' && child.readwrite == 'another value';
 		});
+		tester.assertTrue('Object.create should create ancestorless object when called without params', function () {
+			var child = Object.create();
+			return child.constructor == Object;
+		});
 
 		// test faked shims
 		tester.assertTrue('Object.freeze shouldn\'t throw', function () {
@@ -128,7 +130,25 @@ curl(['test/testutils', 'poly!poly/object'], function (tester) {
 			Object.preventExtensions({});
 			return true;
 		});
-		tester.assertTrue('Object.isExtensible should return true', function () {
+
+		// test isExtensible
+		if ('expando' in document) {
+		(function () {
+			var canSetProp = true;
+			document.expando = false; // prevent extensions
+			try {
+				document.anyProp = 'foo';
+				canSetProp = document.anyProp == 'foo';
+			}
+			catch (ex) {
+				canSetProp = false;
+			}
+			tester.assertEquals('Object.isExtensible should return false on non-expando objects (IE only)', function () {
+				return Object.isExtensible(document.documentElement);
+			}, canSetProp);
+		}());
+		}
+		tester.assertTrue('Object.isExtensible should return true on object literal', function () {
 			return Object.isExtensible({});
 		});
 
@@ -136,6 +156,10 @@ curl(['test/testutils', 'poly!poly/object'], function (tester) {
 		tester.assertTrue('Object.getPrototypeOf should return prototype when using Object.create', function () {
 			var parent = {}, child = Object.create(parent);
 			return Object.getPrototypeOf(child) == parent;
+		});
+
+		tester.assertTrue('Object.getPrototypeOf should return Object.prototype for object literals', function () {
+			return Object.getPrototypeOf({}) == Object.prototype;
 		});
 
 		tester.assertTrue('Object.getPrototypeOf should return prototype when using constructors', function () {
