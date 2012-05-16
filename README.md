@@ -1,7 +1,7 @@
 Code to modern standards -- or not. you pick.
 =========
 
-version: 0.3
+version: 0.3.1
 License: MIT
 
 poly is a collection of AMD modules that can be used to polyfill (aka "shim")
