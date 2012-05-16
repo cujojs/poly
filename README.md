@@ -4,7 +4,7 @@ Code to modern standards -- or not. you pick.
 version: 0.3.1
 License: MIT
 
-poly is a collection of AMD modules that can be used to polyfill (aka "shim")
+poly is a collection of AMD modules that can be used to shim (aka "polyfill")
 old browsers to support modern javascript methods.  You can use poly's modules
 to augment native objects or use them as standardized wrapper functions.
 
@@ -42,21 +42,21 @@ poly/object:
 ---
 
 * Object.create,
-* Object.freeze *,
-* Object.isFrozen *,
-* Object.seal *,
-* Object.isSealed *,
-* Object.getPrototypeOf,
-* Object.keys,
-* Object.getOwnPropertyNames,
-* Object.defineProperty *,
-* Object.defineProperties *,
-* Object.isExtensible *,
-* Object.preventExtensions *,
+* Object.freeze *
+* Object.isFrozen *
+* Object.seal *
+* Object.isSealed *
+* Object.getPrototypeOf
+* Object.keys
+* Object.getOwnPropertyNames
+* Object.defineProperty *
+* Object.defineProperties *
+* Object.isExtensible
+* Object.preventExtensions *
 * Object.getOwnPropertyDescriptor *
 
-Methods marked with * cannot be shimmed safely. You can decide whether these
-methods should fail silently or loudly.  Use the AMD config variable,
+Methods marked with * cannot be shimmed completely. You can decide whether
+these methods should fail silently or loudly.  Use the AMD config variable,
 "failIfShimmed" to determine which methods should fail loudly.
 
 "failIfShimmed" can be:
@@ -65,6 +65,13 @@ methods should fail silently or loudly.  Use the AMD config variable,
 * a RegExp (matches on `("object-" + methodName).toLowerCase()`)
 * a string that can be converted to a RegExp
 * a function that takes a method name as a parameter and return truthy/falsey
+
+By default, "failIfShimmed" will fail loudly for the following functions:
+
+* Object.defineProperty
+* Object.defineProperties
+* Object.preventExtensions
+* Object.getOwnPropertyDescriptor
 
 poly/string:
 ---
@@ -80,32 +87,6 @@ poly/xhr:
 
 Examples
 ==========
-
-Using poly's modules as abstractions/wrappers:
-
-	// the AMD loader has been configured to point the "array" module id to
-	// "poly/array". You could later decide not to use poly and switch over to
-	// another set of modules, such as dojo by aliasing "array" to "dojo/array"
-
-	define(/* my module */ ["array"], function (array) {
-
-		// array is a "standardized" wrapper around native array implementations
-
-		return {
-
-			myFunc: function (arr) {
-
-				array.forEach(arr, function (item) {
-
-					console.log(item);
-
-				}
-
-			}
-
-		}
-
-	});
 
 Using poly's modules as shims / polyfills:
 
@@ -123,6 +104,33 @@ Using poly's modules as shims / polyfills:
 			myFunc: function (arr) {
 
 				arr.forEach(function (item) {
+
+					console.log(item);
+
+				}
+
+			}
+
+		}
+
+	});
+
+Using poly's modules as abstractions/wrappers:
+
+	// the AMD loader has been configured to point the "array" module id to
+	// "poly/array". You could later decide not to use poly and switch over to
+	// another set of modules, such as dojo by aliasing "array" to "dojo/array"
+	curl({ paths: 'array': 'poly/array' });
+
+	define(/* my module */ ["array"], function (array) {
+
+		// array is a "standardized" wrapper around native array implementations
+
+		return {
+
+			myFunc: function (arr) {
+
+				array.forEach(arr, function (item) {
 
 					console.log(item);
 
