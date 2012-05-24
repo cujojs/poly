@@ -33,8 +33,8 @@ var natives = {
 	reduceRight: Array.prototype.reduceRight
 };
 
-// First, test that poly!array doesn't clobber native methods
-curl(['test/testutils', 'poly!poly/array'], function (tester) {
+// First, test that poly/array doesn't clobber native methods
+curl(['test/testutils', 'poly/array'], function (tester) {
 
 	var test = [];
 	// Note: these tests won't run in evirons that don't support .forEach()
@@ -47,7 +47,6 @@ curl(['test/testutils', 'poly!poly/array'], function (tester) {
 }).next(['curl/_privileged'], function (priv) {
 
 	// remove poly/array from cache
-	delete priv.cache['poly!poly/array'];
 	delete priv.cache['poly/array'];
 	// For testing in an ES env, remove shimmed methods first
 	Array.prototype.forEach = null;
@@ -60,7 +59,7 @@ curl(['test/testutils', 'poly!poly/array'], function (tester) {
 	Array.prototype.reduceRight = null;
 	delete Array.isArray;
 
-}).next(['test/testutils', 'poly!poly/array'], runTests);
+}).next(['test/testutils', 'poly/array'], runTests);
 
 	function runTests (tester) {
 

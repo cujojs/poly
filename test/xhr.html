@@ -22,8 +22,8 @@ curl = {
 
 <script>
 
-// First, test that poly!string doesn't clobber native methods
-curl(['test/testutils', 'poly!poly/xhr'], function (tester) {
+// First, test that poly/xhr doesn't clobber native methods
+curl(['test/testutils', 'poly/xhr'], function (tester) {
 
 	tester.assertTrue('XHR exists as global function', function () {
 		return typeof XMLHttpRequest == 'function';

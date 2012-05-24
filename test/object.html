@@ -23,8 +23,7 @@ curl = {
 <script>
 
 /*
-		TODO: test feature to throw for faked methods: `config.failIfShimmed`
-
+		TODO: failIfShimmed
  */
 
 
@@ -45,8 +44,8 @@ var natives = {
 	getOwnPropertyDescriptor: Object.getOwnPropertyDescriptor
 };
 
-// First, test that poly!array doesn't clobber native methods
-curl(['test/testutils', 'poly!poly/object'], function (tester) {
+// First, test that poly/object doesn't clobber native methods
+curl(['test/testutils', 'poly/object'], function (tester) {
 
 	var test = Object;
 	for (var m in natives) {
@@ -58,7 +57,6 @@ curl(['test/testutils', 'poly!poly/object'], function (tester) {
 }).next(['curl/_privileged'], function (priv) {
 
 	// remove poly/object from cache
-	delete priv.cache['poly!poly/object'];
 	delete priv.cache['poly/object'];
 	// For testing in an ES env, remove shimmed methods first
 	delete Object.create;
@@ -75,15 +73,18 @@ curl(['test/testutils', 'poly!poly/object'], function (tester) {
 	delete Object.preventExtensions;
 	delete Object.getOwnPropertyDescriptor;
 
-}).next(['test/testutils', 'poly!poly/object'], runTests);
+}).next(['test/testutils', 'poly/object'], runTests);
 
-	function runTests (tester) {
+	function runTests (tester, polyfill) {
 
 		var methodNames, testObj;
 
 		methodNames = natives;
 
 		testObj = {};
+
+		// TODO: test feature to throw for not-so-safe methods:
+		polyfill.failIfShimmed(false);
 
 		// check for existence of Object methods
 		for (var m in methodNames) {

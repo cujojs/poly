@@ -23,7 +23,7 @@ curl = {
 
 <script>
 
-// First, test that poly!string doesn't clobber native methods
+// First, test that poly!poly/json doesn't clobber native methods
 curl(['test/testutils', 'poly!poly/json'], function (tester) {
 
 	tester.assertTrue('JSON exists as global object', function () {
@@ -45,7 +45,7 @@ curl(['test/testutils', 'poly!poly/json'], function (tester) {
 	delete priv.cache['poly/json'];
 
 }).next(['test/testutils', 'poly!poly/json'], function (tester) {
-console.log('asdfasdfasdf')
+
 		// test that the json2 impl is loaded if JSON is missing
 		tester.assertTrue('JSON global is added if missing', function () {
 			return !!window.JSON

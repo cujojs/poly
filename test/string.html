@@ -28,8 +28,8 @@ var natives = {
 	trimLeft: String.prototype.trimLeft
 };
 
-// First, test that poly!string doesn't clobber native methods
-curl(['test/testutils', 'poly!poly/string'], function (tester) {
+// First, test that poly/string doesn't clobber native methods
+curl(['test/testutils', 'poly/string'], function (tester) {
 
 	var test = " testString ";
 	// Note: these tests won't run in evirons that don't support .trim()
@@ -42,14 +42,13 @@ curl(['test/testutils', 'poly!poly/string'], function (tester) {
 }).next(['curl/_privileged'], function (priv) {
 
 	// remove poly/string from cache
-	delete priv.cache['poly!poly/string'];
 	delete priv.cache['poly/string'];
 	// For testing in an ES env, remove shimmed methods first
 	delete String.prototype.trim;
 	delete String.prototype.trimLeft;
 	delete String.prototype.trimRight;
 
-}).next(['test/testutils', 'poly!poly/string'], runTests);
+}).next(['test/testutils', 'poly/string'], runTests);
 
 
 	function runTests (tester) {

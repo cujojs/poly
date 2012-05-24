@@ -26,8 +26,8 @@ var natives = {
 	bind: Function.prototype.bind
 };
 
-// First, test that poly!string doesn't clobber native methods
-curl(['test/testutils', 'poly!poly/function'], function (tester) {
+// First, test that poly/function doesn't clobber native methods
+curl(['test/testutils', 'poly/function'], function (tester) {
 
 	function test () {}
 	// Note: these tests won't run in evirons that don't support .trim()
@@ -38,12 +38,11 @@ curl(['test/testutils', 'poly!poly/function'], function (tester) {
 }).next(['curl/_privileged'], function (priv) {
 
 	// remove poly/function from cache
-	delete priv.cache['poly!poly/function'];
 	delete priv.cache['poly/function'];
 	// For testing in an ES env, remove shimmed methods first
 	delete Function.prototype.bind;
 
-}).next(['test/testutils', 'poly!poly/function'], runTests);
+}).next(['test/testutils', 'poly/function'], runTests);
 
 
 	function runTests (tester) {
