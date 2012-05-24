@@ -13,21 +13,18 @@
 (function (global) {
 define(['require'], function (require) {
 
-	var JSON;
-
-	function has () {
+	function has (feature) {
 		return global.JSON;
 	}
 
 	if (!has('json')) {
 		return {
-			then: function (success, failure) {
-				require(['js!./support/json/json2.js!exports=JSON'], success, failure);
+			promise: {
+				then: function (success, failure) {
+					require(['js!./support/json/json2.js!exports=JSON'], success, failure);
+				}
 			}
 		};
-	}
-	else {
-		return;
 	}
 
 });
