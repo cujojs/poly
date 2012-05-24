@@ -74,6 +74,8 @@ define(['./_base'], function (base) {
 		toString = {}.toString,
 		featureMap,
 		toObject,
+		_reduce,
+		_find,
 		undef;
 
 	featureMap = {
@@ -186,7 +188,7 @@ define(['./_base'], function (base) {
 
 	if (!has('array-filter')) {
 		proto.filter = function filter (lambda) {
-			var arr, result, val;
+			var arr, result;
 
 			arr = this;
 			result = [];
@@ -208,7 +210,7 @@ define(['./_base'], function (base) {
 
 	if (!has('array-reduce') || !has('array-reduceright')) {
 
-		function _reduce (reduceFunc, inc, initialValue, hasInitialValue) {
+		_reduce = function _reduce (reduceFunc, inc, initialValue, hasInitialValue) {
 			var reduced, startPos, initialValuePos;
 
 			startPos = initialValuePos = inc > 0 ? -1 : toArrayLike(this).length >>> 0;
@@ -237,7 +239,7 @@ define(['./_base'], function (base) {
 
 			// we have a reduced value!
 			return reduced;
-		}
+		};
 
 		if (!has('array-reduce')) {
 			proto.reduce = function reduce (reduceFunc /*, initialValue */) {
@@ -256,7 +258,7 @@ define(['./_base'], function (base) {
 
 	if (!has('array-indexof') || !has('array-lastindexof')) {
 
-		function find (arr, item, from, forward) {
+		_find = function _find (arr, item, from, forward) {
 			var len = toArrayLike(arr).length >>> 0, foundAt = -1;
 
 			// convert to number, or default to start or end positions
@@ -274,19 +276,19 @@ define(['./_base'], function (base) {
 			}, null, from, forward ? 1 : -1);
 
 			return foundAt;
-		}
+		};
 
 		if (!has('array-indexof')) {
 			proto.indexOf = function indexOf (item) {
 				// arguments[+1] is to fool google closure compiler into NOT adding a function argument!
-				return find(this, item, arguments[+1], true);
+				return _find(this, item, arguments[+1], true);
 			};
 		}
 
 		if (!has('array-lastindexof')) {
 			proto.lastIndexOf = function lastIndexOf (item) {
 				// arguments[+1] is to fool google closure compiler into NOT adding a function argument!
-				return find(this, item, arguments[+1], false);
+				return _find(this, item, arguments[+1], false);
 			};
 		}
 	}
