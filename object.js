@@ -53,7 +53,7 @@
  * Object.defineProperty(domNode).
  *
  */
-define(['./_base'], function (base) {
+define(['./lib/_base'], function (base) {
 "use strict";
 
 	var refObj,

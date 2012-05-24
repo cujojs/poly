@@ -8,7 +8,7 @@
  * Licensed under the MIT License at:
  * 		http://www.opensource.org/licenses/mit-license.php
  */
-define (['./_base'], function (base) {
+define (['./lib/_base'], function (base) {
 "use strict";
 
 	var bind,

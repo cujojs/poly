@@ -16,7 +16,7 @@
  * from http://perfectionkills.com/whitespace-deviations/
  * '\x09-\x0D\x20\xA0\u1680\u180E\u2000-\u200A\u202F\u205F\u3000\u2028\u2029'
  */
-define (['./_base'], function (base) {
+define (['./lib/_base'], function (base) {
 	"use strict";
 
 	var proto = String.prototype,

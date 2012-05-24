@@ -67,7 +67,7 @@
 
  */
 
-define(['./_base'], function (base) {
+define(['./lib/_base'], function (base) {
 "use strict";
 
 	var proto = Array.prototype,
