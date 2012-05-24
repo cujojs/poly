@@ -10,44 +10,12 @@
  *
  */
 
-define(['exports'], function (exports) {
+define(function () {
 
-	exports.version = '0.4';
+	var poly = {};
 
-	exports.load = function (def, require, onload, config) {
+	poly.version = '0.4';
 
-		function success (module) {
-			// check for curl.js's promise
-			onload.resolve ? onload.resolve(module) : onload(module);
-		}
-
-		function fail (ex) {
-			// check for curl.js's promise
-			if (onload.reject) {
-				onload.reject(ex)
-			}
-			else {
-				throw ex;
-			}
-		}
-
-		// load module
-		require([def], function (module) {
-			var promise;
-
-			promise = module && module.promise;
-
-			if (promise && promise.then) {
-				promise.then(success, fail);
-			}
-			else {
-				success(module);
-			}
-
-		});
-
-	};
-
-    return exports;
+    return poly;
 
 });

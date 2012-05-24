@@ -8,24 +8,7 @@
  * Licensed under the MIT License at:
  * 		http://www.opensource.org/licenses/mit-license.php
  *
- * TODO: document that this polyfill doesn't bake-in JSON automatically
+ * TODO: document that JSON module is always downloaded unless dev explicitly
+ * mentions it in build instructions
  */
-(function (global) {
-define(['require'], function (require) {
-
-	function has (feature) {
-		return global.JSON;
-	}
-
-	if (!has('json')) {
-		return {
-			promise: {
-				then: function (success, failure) {
-					require(['js!./support/json/json2.js!exports=JSON'], success, failure);
-				}
-			}
-		};
-	}
-
-});
-}(this));
+define(['./lib/_async!./lib/_json'], function () {});
