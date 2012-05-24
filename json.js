@@ -13,25 +13,22 @@
 (function (global) {
 define(['require'], function (require) {
 
-	var JSON, polyCallback;
+	var JSON;
 
 	function has () {
 		return global.JSON;
 	}
 
 	if (!has('json')) {
-		polyCallback = function() {
-			return {
-				then: function (success, failure) {
-					require(['js!./support/json/json2.js!exports=JSON'], success, failure);
-				}
+		return {
+			then: function (success, failure) {
+				require(['js!./support/json/json2.js!exports=JSON'], success, failure);
 			}
 		};
 	}
-
-	return {
-		'polyfill': polyCallback
-	};
+	else {
+		return;
+	}
 
 });
 }(this));

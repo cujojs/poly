@@ -11,33 +11,9 @@
  */
 define(function (require, exports, module) {
 
-	var slice, toString;
+	var toString;
 
-	slice = [].slice;
 	toString = ({}).toString;
-
-	function createWrapper (method) {
-		return function (refObj) {
-			return method.apply(refObj, slice.call(arguments, 1));
-		}
-	}
-
-	exports.addWrappers = function (methods, proto, wrapper) {
-		// export wrappers for missing features
-		for (var p in methods) {
-			if (methods.hasOwnProperty(p)) {
-				wrapper[p] = createWrapper(p in proto ? proto[p] : methods[p]);
-			}
-		}
-	};
-
-	exports.addShims = function (shims, refObj) {
-		for (var p in shims) {
-			if (shims.hasOwnProperty(p)) {
-				refObj[p] = shims[p];
-			}
-		}
-	};
 
 	exports.isFunction = function (o) {
 		return typeof o == 'function';

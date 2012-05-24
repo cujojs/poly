@@ -35,15 +35,7 @@ define(['exports'], function (exports) {
 		require([def], function (module) {
 			var promise;
 
-			try {
-				// augment native
-				if (module['polyfill']) {
-					promise = module['polyfill'](config);
-				}
-			}
-			catch (ex) {
-				fail(ex);
-			}
+			promise = module && module.promise;
 
 			if (promise && promise.then) {
 				promise.then(success, fail);

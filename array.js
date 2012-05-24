@@ -67,16 +67,13 @@
 
  */
 
-define(['./_base', 'exports'], function (base, exports) {
+define(['./_base'], function (base) {
 "use strict";
 
 	var proto = Array.prototype,
 		toString = {}.toString,
 		featureMap,
 		toObject,
-		methods = {},
-		missing = {},
-		alreadyShimmed,
 		undef;
 
 	featureMap = {
@@ -150,192 +147,152 @@ define(['./_base', 'exports'], function (base, exports) {
 		return true;
 	}
 
-	/**
-	 * Iterates through all items in the array, calling the lambda function
-	 * on each.  Skips missing items in sparse arrays.
-	 * @param lambda {function} function (item, index, array) { }
-	 * @param context {object} context of `this` inside lambda function
-	 */
-	function forEach (lambda) {
-		// arguments[+1] is to fool google closure compiler into NOT adding a function argument!
-		_iterate(this, lambda, returnTruthy, arguments[+1]);
-	}
-
-	function every (lambda) {
-		// arguments[+1] is to fool google closure compiler into NOT adding a function argument!
-		return _iterate(this, lambda, returnValue, arguments[+1]);
-	}
-
-	function some (lambda) {
-		// arguments[+1] is to fool google closure compiler into NOT adding a function argument!
-		return _iterate(this, lambda, function (val) { return !val; }, arguments[+1]);
-	}
-
-	methods.forEach = forEach;
 	if (!has('array-foreach')) {
-		missing.forEach = forEach;
+		proto.forEach = function forEach (lambda) {
+			// arguments[+1] is to fool google closure compiler into NOT adding a function argument!
+			_iterate(this, lambda, returnTruthy, arguments[+1]);
+		};
 	}
 
-	methods.every = every;
 	if (!has('array-every')) {
-		missing.every = every;
+		proto.every = function every (lambda) {
+			// arguments[+1] is to fool google closure compiler into NOT adding a function argument!
+			return _iterate(this, lambda, returnValue, arguments[+1]);
+		};
 	}
 
-	methods.some = some;
 	if (!has('array-some')) {
-		missing.some = some;
+		proto.some = function some (lambda) {
+			// arguments[+1] is to fool google closure compiler into NOT adding a function argument!
+			return _iterate(this, lambda, function (val) { return !val; }, arguments[+1]);
+		};
 	}
 
 	/***** mutators *****/
 
-	function map (lambda) {
-		var arr, result;
-
-		arr = this;
-		result = new Array(arr.length);
-
-		// arguments[+1] is to fool google closure compiler into NOT adding a function argument!
-		_iterate(arr, lambda, function (val, i) { result[i] = val; return 1; }, arguments[+1]);
-
-		return result;
-	}
-
-	function filter (lambda) {
-		var arr, result, val;
-
-		arr = this;
-		result = [];
-
-		_iterate(arr, lambda, function (val, i, orig) {
-			// use a copy of the original value in case
-			// the lambda function changed it
-			if (val) {
-				result.push(orig);
-			}
-			return 1;
-		}, arguments[1]);
-
-		return result;
-	}
-
-	methods.map = map;
 	if(!has('array-map')) {
-		missing.map = map;
+		proto.map = function map (lambda) {
+			var arr, result;
+
+			arr = this;
+			result = new Array(arr.length);
+
+			// arguments[+1] is to fool google closure compiler into NOT adding a function argument!
+			_iterate(arr, lambda, function (val, i) { result[i] = val; return 1; }, arguments[+1]);
+
+			return result;
+		};
 	}
 
-	methods.filter = filter;
 	if (!has('array-filter')) {
-		missing.filter = filter;
+		proto.filter = function filter (lambda) {
+			var arr, result, val;
+
+			arr = this;
+			result = [];
+
+			_iterate(arr, lambda, function (val, i, orig) {
+				// use a copy of the original value in case
+				// the lambda function changed it
+				if (val) {
+					result.push(orig);
+				}
+				return 1;
+			}, arguments[1]);
+
+			return result;
+		};
 	}
 
 	/***** reducers *****/
 
-	function _reduce (reduceFunc, inc, initialValue, hasInitialValue) {
-		var reduced, startPos, initialValuePos;
+	if (!has('array-reduce') || !has('array-reduceright')) {
 
-		startPos = initialValuePos = inc > 0 ? -1 : toArrayLike(this).length >>> 0;
+		function _reduce (reduceFunc, inc, initialValue, hasInitialValue) {
+			var reduced, startPos, initialValuePos;
 
-		// If no initialValue, use first item of array (we know length !== 0 here)
-		// and adjust i to start at second item
-		if (!hasInitialValue) {
-			_iterate(this, returnValue, function (val, i) {
-				reduced = val;
-				initialValuePos = i;
-			}, null, startPos + inc, inc);
-			if (initialValuePos == startPos) {
-				// no intial value and no items in array!
-				throw new TypeError();
+			startPos = initialValuePos = inc > 0 ? -1 : toArrayLike(this).length >>> 0;
+
+			// If no initialValue, use first item of array (we know length !== 0 here)
+			// and adjust i to start at second item
+			if (!hasInitialValue) {
+				_iterate(this, returnValue, function (val, i) {
+					reduced = val;
+					initialValuePos = i;
+				}, null, startPos + inc, inc);
+				if (initialValuePos == startPos) {
+					// no intial value and no items in array!
+					throw new TypeError();
+				}
 			}
+			else {
+				// If initialValue provided, use it
+				reduced = initialValue;
+			}
+
+			// Do the actual reduce
+			_iterate(this, function (item, i, arr) {
+				reduced = reduceFunc(reduced, item, i, arr);
+			}, returnTruthy, null, initialValuePos + inc, inc);
+
+			// we have a reduced value!
+			return reduced;
 		}
-		else {
-			// If initialValue provided, use it
-			reduced = initialValue;
+
+		if (!has('array-reduce')) {
+			proto.reduce = function reduce (reduceFunc /*, initialValue */) {
+				return _reduce.call(this, reduceFunc, 1, arguments[+1], arguments.length > 1);
+			};
 		}
 
-		// Do the actual reduce
-		_iterate(this, function (item, i, arr) {
-			reduced = reduceFunc(reduced, item, i, arr);
-		}, returnTruthy, null, initialValuePos + inc, inc);
-
-		// we have a reduced value!
-		return reduced;
+		if (!has('array-reduceright')) {
+			proto.reduceRight = function reduceRight (reduceFunc /*, initialValue */) {
+				return _reduce.call(this, reduceFunc, -1, arguments[+1], arguments.length > 1);
+			};
+		}
 	}
-
-	function reduce (reduceFunc /*, initialValue */) {
-		return _reduce.call(this, reduceFunc, 1, arguments[+1], arguments.length > 1);
-	}
-
-	function reduceRight (reduceFunc /*, initialValue */) {
-		return _reduce.call(this, reduceFunc, -1, arguments[+1], arguments.length > 1);
-	}
-
-	methods.reduce = reduce;
-	if (!has('array-reduce')) {
-		missing.reduce = reduce;
-	}
-
-	methods.reduceRight = reduceRight;
-	if (!has('array-reduceright')) {
-		missing.reduceRight = reduceRight;
-    }
 
 	/***** finders *****/
 
-	function find (arr, item, from, forward) {
-		var len = toArrayLike(arr).length >>> 0, foundAt = -1;
+	if (!has('array-indexof') || !has('array-lastindexof')) {
 
-		// convert to number, or default to start or end positions
-		from = isNaN(from) ? (forward ? 0 : len - 1) : Number(from);
-		// negative means it's an offset from the end position
-		if (from < 0) {
-			from = len + from - 1;
+		function find (arr, item, from, forward) {
+			var len = toArrayLike(arr).length >>> 0, foundAt = -1;
+
+			// convert to number, or default to start or end positions
+			from = isNaN(from) ? (forward ? 0 : len - 1) : Number(from);
+			// negative means it's an offset from the end position
+			if (from < 0) {
+				from = len + from - 1;
+			}
+
+			_iterate(arr, returnValue, function (val, i) {
+				if (val === item) {
+					foundAt = i;
+				}
+				return foundAt == -1;
+			}, null, from, forward ? 1 : -1);
+
+			return foundAt;
 		}
 
-		_iterate(arr, returnValue, function (val, i) {
-			if (val === item) {
-				foundAt = i;
-			}
-			return foundAt == -1;
-		}, null, from, forward ? 1 : -1);
-
-		return foundAt;
-	}
-
-	function indexOf (item) {
-		// arguments[+1] is to fool google closure compiler into NOT adding a function argument!
-		return find(this, item, arguments[+1], true);
-	}
-
-	function lastIndexOf (item) {
-		// arguments[+1] is to fool google closure compiler into NOT adding a function argument!
-		return find(this, item, arguments[+1], false);
-	}
-
-	methods.indexOf = indexOf;
-	if (!has('array-indexof')) {
-		missing.indexOf = indexOf;
-	}
-
-	methods.lastIndexOf = lastIndexOf;
-	if (!has('array-lastindexof')) {
-		missing.lastIndexOf = lastIndexOf;
-	}
-
-	exports.isArray = isArray;
-
-	base.addWrappers(methods, proto, exports);
-
-	// augment prototype if requested
-	exports['polyfill'] = function () {
-		if (!alreadyShimmed) {
-			alreadyShimmed = true;
-			base.addShims(missing, proto);
-			if (!Array.isArray) {
-				Array.isArray = isArray;
-			}
+		if (!has('array-indexof')) {
+			proto.indexOf = function indexOf (item) {
+				// arguments[+1] is to fool google closure compiler into NOT adding a function argument!
+				return find(this, item, arguments[+1], true);
+			};
 		}
-	};
 
-    return exports;
+		if (!has('array-lastindexof')) {
+			proto.lastIndexOf = function lastIndexOf (item) {
+				// arguments[+1] is to fool google closure compiler into NOT adding a function argument!
+				return find(this, item, arguments[+1], false);
+			};
+		}
+	}
+
+	if (!Array.isArray) {
+		Array.isArray = isArray;
+	}
 
 });

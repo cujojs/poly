@@ -8,16 +8,11 @@
  * Licensed under the MIT License at:
  * 		http://www.opensource.org/licenses/mit-license.php
  */
-/**
- * 	TODO: push?
- *
- */
-define (['./_base', 'exports'], function (base, exports) {
-	"use strict";
+define (['./_base'], function (base) {
+"use strict";
 
-	var alreadyShimmed = false,
+	var bind,
 		slice = [].slice,
-		missing = {},
 		proto = Function.prototype,
 		featureMap;
 
@@ -30,38 +25,24 @@ define (['./_base', 'exports'], function (base, exports) {
 		return base.isFunction(proto[prop]);
 	}
 
-	// adapted from Mozilla Developer Network example at
-	// https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/Function/bind
-	function bind (obj) {
-		var args = slice.call(arguments, 1),
-			self = this,
-			nop = function () {},
-			bound = function () {
-			  return self.apply(this instanceof nop ? this : (obj || {}), args.concat(slice.call(arguments)));
-			};
-		nop.prototype = this.prototype || {}; // Firefox cries sometimes if prototype is undefined
-		bound.prototype = new nop();
-		return bound;
-	}
-
 	// check for missing features
 	if (!has('function-bind')) {
-		missing.bind = bind;
-		exports.bind = function (func) {
-			return bind.apply(func, slice.call(arguments, 1));
+		// adapted from Mozilla Developer Network example at
+		// https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/Function/bind
+		bind = function bind (obj) {
+			var args = slice.call(arguments, 1),
+				self = this,
+				nop = function () {},
+				bound = function () {
+				  return self.apply(this instanceof nop ? this : (obj || {}), args.concat(slice.call(arguments)));
+				};
+			nop.prototype = this.prototype || {}; // Firefox cries sometimes if prototype is undefined
+			bound.prototype = new nop();
+			return bound;
 		};
-	}
-	else {
-		exports.bind = function (func) {
-			return func.bind.apply(func, slice.call(arguments, 1));
-		};
+		proto.bind = bind;
 	}
 
-	exports['polyfill'] = function () {
-		if (!alreadyShimmed) {
-			base.addShims(missing, proto);
-			alreadyShimmed = true;
-		}
-	};
+	return {};
 
 });

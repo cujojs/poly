@@ -9,7 +9,7 @@
  * 		http://www.opensource.org/licenses/mit-license.php
  *
  */
-define(['./_base', 'exports'], function (base, exports) {
+define(['./_base'], function (base) {
 
 	var progIds, xhrCtor;
 
@@ -35,12 +35,8 @@ define(['./_base', 'exports'], function (base, exports) {
 		}(progIds.shift()));
 	}
 
-	exports.XMLHttpRequest = exports.xhr = xhrCtor;
-
-	exports['polyfill'] = function () {
-		if (!window.XMLHttpRequest) {
-			window.XMLHttpRequest = xhrCtor;
-		}
-	};
+	if (!window.XMLHttpRequest) {
+		window.XMLHttpRequest = xhrCtor;
+	}
 
 });
