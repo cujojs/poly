@@ -1,0 +1,33 @@
+{
+    "name": "poly",
+    "version": "0.4.0",
+    "description": "Polyfill (shim) AMD modules that you may use as wrappers or to augment native prototypes (your choice)",
+    "keywords": ["poly", "cujo", "es5"],
+    "licenses": [
+        {
+            "type": "MIT",
+            "url": "http://www.opensource.org/licenses/mit-license.php"
+        }
+    ],
+    "repositories": [
+        {
+            "type": "git",
+            "url": "https://github.com/cujojs/poly"
+        }
+    ],
+    "bugs": "https://github.com/cujojs/poly/issues",
+    "maintainers": [
+        {
+            "name": "John Hann",
+            "web": "http://unscriptable.com"
+        },
+        {
+            "name": "Brian Cavalier",
+            "web": "http://hovercraftstudios.com"
+        }
+    ],
+    "main": "./poly",
+    "directories": {
+        "test": "test"
+    }
+}
