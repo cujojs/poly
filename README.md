@@ -67,17 +67,17 @@ poly/object:
 * Object.getOwnPropertyDescriptor *
 
 Methods marked with * cannot be shimmed completely. You can decide whether
-these methods should fail silently or loudly.  Use the AMD config variable,
-"failIfShimmed" to determine which methods should fail loudly.
+these methods should fail silently or loudly.  The poly/object and poly/all
+modules return a function, `failIfShimmed`, that takes a single parameter.
 
-"failIfShimmed" can be:
+This parameter may be:
 
-* a boolean (all should fail)
+* a boolean (all Object.XXX functions should fail)
 * a RegExp (matches on `("object-" + methodName).toLowerCase()`)
 * a string that can be converted to a RegExp
 * a function that takes a method name as a parameter and return truthy/falsey
 
-By default, "failIfShimmed" will fail loudly for the following functions:
+By default, `failIfShimmed` will fail loudly for the following functions:
 
 * Object.defineProperty
 * Object.defineProperties
