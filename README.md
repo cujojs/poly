@@ -1,17 +1,28 @@
-Code to modern standards -- or not. you pick.
+Code to modern standards. Run everywhere.
 =========
 
-version: 0.3.1
+version: 0.4
 License: MIT
 
-poly is a collection of AMD modules that can be used to shim (aka "polyfill")
-old browsers to support modern javascript methods.  You can use poly's modules
-to augment native objects or use them as standardized wrapper functions.
+poly.js is the a collection of AMD modules that shim (aka "polyfill")
+old browsers to support modern (aka "ES5-ish") javascript.
 
-You choose how you want to use poly by how you load the modules.
+poly.js is unique amongst ES5-ish shims because it:
 
-If you load the shims using the poly! plugin, they augment the native objects.
-If you load the shims directly, they are served as wrapper functions.
+* is modular, not monolithic
+* is tiny
+* is configurable to suit your code
+* can be minified using a has-aware compiler/compressor
+
+After cloning poly, be sure to update the submodules if you want to include
+JSON support.  Run the following from the root of the poly directory:
+
+```
+git submodule init && git submodule update
+```
+
+Features
+----
 
 poly augments browsers with all of the following features:
 
@@ -90,22 +101,24 @@ Examples
 
 Using poly's modules as shims / polyfills:
 
-	// somewhere in your app's initialization code, load the "poly/array" module
-	// using the "poly!" plugin and it will shim the native Array prototype
-	curl({ preloads: [ "poly!poly/array" ] });
+```js
+	// somewhere in your app's initialization code, load the "poly/array"
+	// and "poly/function" module
+	// and it will shim the native Array prototype
+	curl({ preloads: [ "poly/array" ] });
 
-	// later, just use arrays as if the js engine supports javascript 1.8!
+	// later, just use arrays as if the js engine supports javascript 1.7!
 	define(/* my module */ function () {
 
 		// Arrays are so hawt!
 
 		return {
 
-			myFunc: function (arr) {
+			myFunc: function (arr, process) {
 
 				arr.forEach(function (item) {
 
-					console.log(item);
+					process(item);
 
 				}
 
@@ -114,30 +127,14 @@ Using poly's modules as shims / polyfills:
 		}
 
 	});
+```
 
-Using poly's modules as abstractions/wrappers:
+```js
+	// use all available shims
+	curl({ preloads: [ "poly/all" ] });
+```
 
-	// the AMD loader has been configured to point the "array" module id to
-	// "poly/array". You could later decide not to use poly and switch over to
-	// another set of modules, such as dojo by aliasing "array" to "dojo/array"
-	curl({ paths: 'array': 'poly/array' });
-
-	define(/* my module */ ["array"], function (array) {
-
-		// array is a "standardized" wrapper around native array implementations
-
-		return {
-
-			myFunc: function (arr) {
-
-				array.forEach(arr, function (item) {
-
-					console.log(item);
-
-				}
-
-			}
-
-		}
-
-	});
+```js
+	// use just the array and function shims
+	curl({ preloads: [ "poly/array", "poly/function" ] });
+```
