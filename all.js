@@ -1,1 +1,7 @@
-define(['./array', './function', './json', './object', './string', './xhr'], function () {});
+define(['./object', './array', './function', './json', './string', './xhr'], function (object) {
+
+	return {
+		failIfShimmed: object.failIfShimmed
+	};
+
+});
