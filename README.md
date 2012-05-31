@@ -12,7 +12,7 @@ poly.js is unique amongst ES5-ish shims because it:
 * is modular, not monolithic
 * is tiny
 * is configurable to suit your code
-* can be minified using a has-aware compiler/compressor
+* can be minified using a has-aware optimizer
 
 After cloning poly, be sure to update the submodules if you want to include
 JSON support.  Run the following from the root of the poly directory:
@@ -138,3 +138,64 @@ Using poly's modules as shims / polyfills:
 	// use just the array and function shims
 	curl({ preloads: [ "poly/array", "poly/function" ] });
 ```
+
+How do I know which shims to use?
+===
+
+If you've written the code, you probably know what ES5-ish features you've used.
+If you're using `func.bind()`, you should load the poly/function module.  If
+you're using `str.trim()`, you will need the poly/string module.
+
+If you're leveraging code that is meant to run in a CommonJS environment, you
+probably need all of poly's shims except poly/xhr.  (Note:
+[curl.js](https://github.com/cujojs/curl) can load CommonJS Modules/1.1 files
+without pre-wrapping them in an AMD "transport" wrapper.  Check out the
+[moduleLoader](https://github.com/cujojs/curl/wiki/Using-curl.js-with-CommonJS-Modules)
+package config option.)
+
+How can I limit the size of the shim modules?
+---
+
+poly.js supports has-aware AMD optimizers.  dojo's build tool and RequireJS's
+r.js optimizer will automatically remove unneeded shims when provided a "has
+profile".  Please refer to either of those optimization tools for more
+information about using and creating a "has profile".
+
+Can I use feature detection to only load the shims the current browser requires?
+---
+
+Unfortunately, browser's didn't adopt ES5 features over night. There are various
+degrees of ES5-ishness in the wild.  Therefore, there is no _magic test_ that
+you can use to determine whether to load an ES5-ish shim or not.
+
+However, if you limit your supported browser list, you may be able to make
+certain assumptions.  For instance, if you limit your supported browsers to IE6+
+and the latest version for the remainder of the vendors, you could choose
+a fairly broad test.  Something like the following is fairly safe:
+
+```js
+var preloads = [];
+if (typeof Object.preventExtensions != 'function') {
+	preloads.push('poly/all');
+}
+curl({ preloads: preloads });
+```
+
+If your list of supported browsers isn't so clean, try taking a survey of your
+code so you can find a reasonable set of tests.  The following is a possible
+set of tests for a project that uses object, function, and string shims:
+
+```js
+var preloads = [];
+if (typeof Object.preventExtensions == 'function') {
+	preloads.push('poly/object');
+}
+if (typeof Function.prototype.bind != 'function') {
+	preloads.push('poly/function');
+}
+if (typeof "".trim != 'function') {
+	preloads.push('poly/string');
+}
+curl({ preloads: preloads });
+```
+
