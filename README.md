@@ -153,6 +153,9 @@ without pre-wrapping them in an AMD "transport" wrapper.  Check out the
 [moduleLoader](https://github.com/cujojs/curl/wiki/Using-curl.js-with-CommonJS-Modules)
 package config option.)
 
+If you're using poly.js with wire.js, you will need the following shims
+to use wire.js in all browsers: poly/array, poly/function, poly/object.
+
 How can I limit the size of the shim modules?
 ---
 
