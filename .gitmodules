@@ -1,3 +1,0 @@
-[submodule "support/json"]
-	path = support/json
-	url = https://github.com/douglascrockford/JSON-js.git

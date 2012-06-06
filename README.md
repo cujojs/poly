@@ -14,13 +14,6 @@ poly.js is unique amongst ES5-ish shims because it:
 * is configurable to suit your code
 * can be minified using a has-aware optimizer
 
-After cloning poly, be sure to update the submodules if you want to include
-JSON support.  Run the following from the root of the poly directory:
-
-```
-git submodule init && git submodule update
-```
-
 Features
 ----
 
@@ -202,3 +195,8 @@ if (typeof "".trim != 'function') {
 curl({ preloads: preloads });
 ```
 
+JSON2
+===
+
+JSON support via Douglas Crockford's JSON2 lib at:
+https://github.com/douglascrockford/JSON-js.git
