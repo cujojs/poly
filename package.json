@@ -1,8 +1,8 @@
 {
     "name": "poly",
     "version": "0.4.0",
-    "description": "Polyfill (shim) AMD modules that you may use as wrappers or to augment native prototypes (your choice)",
-    "keywords": ["poly", "cujo", "es5"],
+    "description": "poly.js is the a collection of AMD modules that shim (aka \"polyfill\") old browsers to support modern (aka \"ES5-ish\") javascript.",
+    "keywords": ["poly", "cujo", "es5", "shim", "array", "object", "string", "function", "xhr", "json"],
     "licenses": [
         {
             "type": "MIT",
@@ -17,6 +17,12 @@
     ],
     "bugs": "https://github.com/cujojs/poly/issues",
     "maintainers": [
+        {
+            "name": "John Hann",
+            "web": "http://unscriptable.com"
+        }
+    ],
+    "collaborators": [
         {
             "name": "John Hann",
             "web": "http://unscriptable.com"
