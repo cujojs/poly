@@ -71,13 +71,7 @@ This parameter may be:
 By default, poly/object will not throw any exceptions and allows non-functional
 or incomplete shims to fail silently.  poly/all works the same way.  However,
 poly/strict sets `failIfShimmed` so that poly/object will throw
-exceptions for the following functions:
-
-* Object.defineProperty
-* Object.defineProperties
-* Object.preventExtensions
-* Object.getOwnPropertyDescriptor
-* Object.create (but only if supplying the second parameter)
+exceptions for some functions.  (see below)
 
 poly/string:
 ---
@@ -90,6 +84,32 @@ poly/xhr:
 ---
 
 * (global) XMLHttpRequest
+
+poly/all (also just "poly"):
+---
+
+This is a *convenience module* to load and apply all shims.  Shims that have
+varying levels of "strictness" are set to be loose.  Use poly/strict or
+create your own version of poly/all to be stricter.
+
+The "poly" main module will load poly/all.
+
+poly/strict:
+---
+
+This *convenience module* loads and applies all shims, but ensures that
+whitespace characters comply with ES5 specs (many browsers don't do this)
+and fails loudly for the following object shims that can't reasonably
+be shimmed to comply with ES5:
+
+* Object.defineProperty
+* Object.defineProperties
+* Object.preventExtensions
+* Object.getOwnPropertyDescriptor
+* Object.create (but only if supplying the second parameter)
+
+If you would like your code to be even stricter, load poly/object or poly/string
+separately and set the desired level of strictness.
 
 Examples
 ==========
@@ -127,6 +147,16 @@ Using poly's modules as shims / polyfills:
 ```js
 	// use all available shims
 	curl({ preloads: [ "poly/all" ] });
+```
+
+```js
+	// another way to use all available shims
+	curl({ preloads: [ "poly" ] });
+```
+
+```js
+	// use all shims in, but with stronger ES5 compliance
+	curl({ preloads: [ "poly/strict" ] });
 ```
 
 ```js
