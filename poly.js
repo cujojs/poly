@@ -10,9 +10,13 @@
  *
  */
 
-define(function () {
+define(['./all'], function (all) {
 
 	var poly = {};
+
+	Object.keys(all).forEach(function (p) {
+		poly[p] = all[p];
+	});
 
 	poly.version = '0.4';
 
