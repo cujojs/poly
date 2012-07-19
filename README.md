@@ -1,7 +1,7 @@
 Code to modern standards. Run everywhere.
 =========
 
-version: 0.4
+version: 0.5
 License: MIT
 
 poly.js is the a collection of AMD modules that shim (aka "polyfill")

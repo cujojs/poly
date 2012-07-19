@@ -8,6 +8,7 @@
  * Licensed under the MIT License at:
  * 		http://www.opensource.org/licenses/mit-license.php
  *
+ * @version 0.5
  */
 
 define(['./all'], function (all) {
@@ -18,7 +19,7 @@ define(['./all'], function (all) {
 		poly[p] = all[p];
 	});
 
-	poly.version = '0.4';
+	poly.version = '0.5';
 
     return poly;
 
