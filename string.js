@@ -21,6 +21,7 @@ define (['./lib/_base'], function (base) {
 
 	var proto = String.prototype,
 		featureMap,
+		has,
 		toString;
 
 	featureMap = {
@@ -29,10 +30,14 @@ define (['./lib/_base'], function (base) {
 		'string-trimright': 'trimRight'
 	};
 
-	function has (feature) {
+	function checkFeature (feature) {
 		var prop = featureMap[feature];
 		return base.isFunction(proto[prop]);
 	}
+
+	function neg () { return false; }
+
+	has = checkFeature;
 
 	// compressibility helper
 	function remove (str, rx) {
@@ -46,28 +51,36 @@ define (['./lib/_base'], function (base) {
 	trimRightRx = /\s+$/;
 	trimLeftRx = /^\s+/;
 
-	if (!has('string-trim')) {
-		proto.trim = function trim () {
-			return remove(remove(toString(this), trimLeftRx), trimRightRx);
-		};
+	function checkShims () {
+		if (!has('string-trim')) {
+			proto.trim = function trim () {
+				return remove(remove(toString(this), trimLeftRx), trimRightRx);
+			};
+		}
+
+		if (!has('string-trimleft')) {
+			proto.trimLeft = function trimLeft () {
+				return remove(toString(this), trimLeftRx);
+			};
+		}
+
+		if (!has('string-trimright')) {
+			proto.trimRight = function trimRight () {
+				return remove(toString(this), trimRightRx);
+			};
+		}
+
 	}
 
-	if (!has('string-trimleft')) {
-		proto.trimLeft = function trimLeft () {
-			return remove(toString(this), trimLeftRx);
-		};
-	}
-
-	if (!has('string-trimright')) {
-		proto.trimRight = function trimRight () {
-			return remove(toString(this), trimRightRx);
-		};
-	}
+	checkShims();
 
 	return {
 		setWhitespaceChars: function (wsc) {
 			trimRightRx = new RegExp(wsc + '$');
 			trimLeftRx = new RegExp('^' + wsc);
+			// fail all has() checks and check shims again
+			has = neg;
+			checkShims();
 		}
 	};
 
