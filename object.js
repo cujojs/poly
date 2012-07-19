@@ -24,17 +24,11 @@
  *
  * true: fail on every shimmed Object function
  * false: fail never
- * RegExp: fail for shims whose name matches the RegExp
- * string: string is converted to a RegExp
  * function: fail for shims whose name returns true from function (name) {}
  *
- * By default, failIfShimmed fails for the following functions:
- * defineProperty
- * defineProperties
- * preventExtensions
- * getOwnPropertyDescriptor
+ * By default, no shims fail.
  *
- * The following functions don't fail by default because they're safely shimmed:
+ * The following functions are safely shimmed:
  * create (unless the second parameter is specified since that calls defineProperties)
  * keys
  * getOwnPropertyNames
@@ -52,6 +46,9 @@
  * Note: this shim doesn't do anything special with IE8's minimally useful
  * Object.defineProperty(domNode).
  *
+ * The poly/strict module will set failIfShimmed to fail for some shims.
+ * See the documentation for more information.
+ *
  */
 define(['./lib/_base'], function (base) {
 "use strict";
@@ -61,7 +58,6 @@ define(['./lib/_base'], function (base) {
 		getPrototypeOf,
 		featureMap,
 		shims,
-		failTestRx,
 		undef;
 
 	refObj = Object;
@@ -88,12 +84,6 @@ define(['./lib/_base'], function (base) {
 	};
 
 	shims = {};
-
-	failTestRx = /^define|^prevent|descriptor$/i;
-
-	function regexpShouldThrow (feature) {
-		return failTestRx.test(feature);
-	}
 
 	function createFlameThrower (feature) {
 		return function () {
@@ -236,15 +226,7 @@ define(['./lib/_base'], function (base) {
 	function failIfShimmed (failTest) {
 		var shouldThrow;
 
-		// first convert failTest to a function
-		if (typeof failTest == 'string' || failTest instanceof String) {
-			failTest = new RegExp(failTest, 'i');
-		}
-		if (failTest instanceof RegExp) {
-			failTestRx = failTest;
-			shouldThrow = regexpShouldThrow;
-		}
-		else if (typeof failTest == 'function') {
+		if (typeof failTest == 'function') {
 			shouldThrow = failTest;
 		}
 		else {
@@ -260,7 +242,8 @@ define(['./lib/_base'], function (base) {
 		}
 	}
 
-	failIfShimmed(regexpShouldThrow);
+	// this is effectively a no-op, so why execute it?
+	//failIfShimmed(false);
 
 	return {
 		failIfShimmed: failIfShimmed
