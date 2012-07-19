@@ -64,6 +64,11 @@ define (['./lib/_base'], function (base) {
 		};
 	}
 
-	return {};
+	return {
+		setWhitespaceChars: function (wsc) {
+			trimRightRx = new RegExp(wsc + '$');
+			trimLeftRx = new RegExp('^' + wsc);
+		}
+	};
 
 });
