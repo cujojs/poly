@@ -11,16 +11,11 @@
  * @version 0.5
  */
 
-define(['./all'], function (all) {
+define(['./object', './string', './array', './function', './json', './xhr'], function (object, string) {
 
-	var poly = {};
-
-	Object.keys(all).forEach(function (p) {
-		poly[p] = all[p];
-	});
-
-	poly.version = '0.5';
-
-    return poly;
+	return {
+		failIfShimmed: object.failIfShimmed,
+		setWhitespaceChars: string.setWhitespaceChars
+	};
 
 });

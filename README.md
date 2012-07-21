@@ -114,6 +114,26 @@ separately and set the desired level of strictness.
 Examples
 ==========
 
+Sample AMD package declaration:
+
+```js
+var cfg = {
+	packages: [
+		{ name: 'poly', location: 'js/poly-0.5', main: 'poly' }
+	]
+};
+```
+
+Sample AMD package declaration (strict):
+
+```js
+var cfg = {
+	packages: [
+		{ name: 'poly', location: 'js/poly-0.5', main: 'strict' }
+	]
+};
+```
+
 Using poly's modules as shims / polyfills:
 
 ```js

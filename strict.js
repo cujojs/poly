@@ -1,4 +1,4 @@
-define(['./all'], function (all) {
+define(['./object', './string', './array', './function', './json', './xhr'], function (object, string) {
 
 	var failTestRx;
 
@@ -9,10 +9,13 @@ define(['./all'], function (all) {
 	}
 
 	// set unshimmable Object methods to be somewhat strict:
-	all.failIfShimmed(regexpShouldThrow);
+	object.failIfShimmed(regexpShouldThrow);
 	// set strict whitespace
-	all.setWhitespaceChars('\\s');
+	string.setWhitespaceChars('\\s');
 
-	return all;
+	return {
+		failIfShimmed: object.failIfShimmed,
+		setWhitespaceChars: string.setWhitespaceChars
+	};
 
 });
