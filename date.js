@@ -31,7 +31,7 @@ define(['./lib/_base'], function (base) {
 	// borrowed this from https://github.com/kriskowal/es5-shim
 	isoCompat = origDate.parse("+275760-09-13T00:00:00.000Z") == maxDate;
 	// can't even have spaces in iso date strings
-	isoParseRx = /^([+\-]\d{6}|\d{4})(?:-(\d{2}))?(?:-(\d{2}))?(?:T(\d{2}):(\d{2})(?::(\d{2})(?:.(\d{1,3}))?)?(?:Z|([+\-]\d{2})(?::?(\d{2}))?)?)?/;
+	isoParseRx = /^([+\-]\d{6}|\d{4})(?:-(\d{2}))?(?:-(\d{2}))?(?:T(\d{2}):(\d{2})(?::(\d{2})(?:.(\d{1,3}))?)?(?:Z|([+\-]\d{2})(?::?(\d{2}))?)?)?$/;
 
 	featureMap = {
 		'date-now': 'now',
@@ -162,12 +162,12 @@ define(['./lib/_base'], function (base) {
 		Date_.parse = function parse (str) {
 			var result;
 
-			// try original parse()
-			result = origParse(str);
+			// check for iso date
+			result = isoParse('' + str);
 
 			if (isInvalidDate(result)) {
-				// check for iso date
-				result = isoParse('' + str);
+				// try original parse()
+				result = origParse(str);
 			}
 
 			return result;
