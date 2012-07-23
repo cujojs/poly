@@ -31,7 +31,7 @@ define(['./lib/_base'], function (base) {
 	// borrowed this from https://github.com/kriskowal/es5-shim
 	isoCompat = origDate.parse("+275760-09-13T00:00:00.000Z") == maxDate;
 	// can't even have spaces in iso date strings
-	isoParseRx = /^([+\-]\d{6}|\d{4})(?:-(\d{2}))?(?:-(\d{2}))?(?:T(\d{2}):(\d{2})(?::(\d{2})(?:.(\d{1,3}))?)?(?:Z|([+\-]\d{2})(?::(\d{2}))?)?)?/;
+	isoParseRx = /^([+\-]\d{6}|\d{4})(?:-(\d{2}))?(?:-(\d{2}))?(?:T(\d{2}):(\d{2})(?::(\d{2})(?:.(\d{1,3}))?)?(?:Z|([+\-]\d{2})(?::?(\d{2}))?)?)?/;
 
 	featureMap = {
 		'date-now': 'now',
@@ -76,7 +76,7 @@ define(['./lib/_base'], function (base) {
 			// this problem. (learned of this trick from kriskowal/es5-shim.)
 			if (y >= 0 && y < 100) {
 				y += 400;
-				adjust = -126227808e5;
+				adjust = -126227808e5; // 400 years
 			}
 
 			result = Date.UTC(y, (m || 1) - 1, d || 1, h || 0, n || 0, s || 0, ms || 0) + adjust;
