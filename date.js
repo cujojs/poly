@@ -177,6 +177,9 @@ define(['./lib/_base'], function (base) {
 
 			Date = Date_;
 		}
+		else if (Date != origDate) {
+			Date = origDate;
+		}
 	}
 
 	checkIsoCompat();
