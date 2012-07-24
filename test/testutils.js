@@ -14,7 +14,7 @@ define(['curl'], function (curl) {
 		runTest: function runTest (name, test, value) {
 
 			try {
-				var actual = test();
+				var actual = typeof test == 'function' ? test() : test;
 				this.output(name + ':', actual === value ? 'succeeded' :
 					('failed: expected <<' + value + '>>, got <<' + actual + '>> **********'));
 			}
