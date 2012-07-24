@@ -30,7 +30,8 @@ define(['./lib/_base'], function (base) {
 	// borrowed this from https://github.com/kriskowal/es5-shim
 	isoCompat = function () { return origDate.parse('+275760-09-13T00:00:00.000Z') == maxDate; };
 	// can't even have spaces in iso date strings
-	isoParseRx = /^([+\-]\d{6}|\d{4})(?:-(\d{2}))?(?:-(\d{2}))?(?:T(\d{2}):(\d{2})(?::(\d{2})(?:.(\d{1,3}))?)?(?:Z|([+\-]\d{2})(?::?(\d{2}))?)?)?$/;
+	// in Chrome and FF, the colon in the timezone is optional, but IE, Opera, and Safari need it
+	isoParseRx = /^([+\-]\d{6}|\d{4})(?:-(\d{2}))?(?:-(\d{2}))?(?:T(\d{2}):(\d{2})(?::(\d{2})(?:.(\d{1,3}))?)?(?:Z|([+\-]\d{2})(?::(\d{2}))?)?)?$/;
 
 	featureMap = {
 		'date-now': 'now',
