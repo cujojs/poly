@@ -10,10 +10,10 @@
 	Licensed under the MIT License at:
 		http://www.opensource.org/licenses/mit-license.php
 */
+(function (origDate) {
 define(['./lib/_base'], function (base) {
 
-	var origDate,
-		origProto,
+	var origProto,
 		origParse,
 		featureMap,
 		maxDate,
@@ -22,20 +22,20 @@ define(['./lib/_base'], function (base) {
 		isoParseRx,
 		undef;
 
-	origDate = Date;
 	origProto = origDate.prototype;
 	origParse = origDate.parse;
 
 	maxDate = 8.64e15;
 	invalidDate = NaN;
 	// borrowed this from https://github.com/kriskowal/es5-shim
-	isoCompat = origDate.parse("+275760-09-13T00:00:00.000Z") == maxDate;
+	isoCompat = function () { return origDate.parse('+275760-09-13T00:00:00.000Z') == maxDate; };
 	// can't even have spaces in iso date strings
 	isoParseRx = /^([+\-]\d{6}|\d{4})(?:-(\d{2}))?(?:-(\d{2}))?(?:T(\d{2}):(\d{2})(?::(\d{2})(?:.(\d{1,3}))?)?(?:Z|([+\-]\d{2})(?::?(\d{2}))?)?)?$/;
 
 	featureMap = {
 		'date-now': 'now',
-		'date-tojson': 'toJSON'
+		'date-tojson': 'toJSON',
+		'date-toisostring': 'toISOString'
 	};
 
 	function has (feature) {
@@ -44,7 +44,7 @@ define(['./lib/_base'], function (base) {
 	}
 
 	if (!has('date-now')) {
-		Date.now = function () { return +(new Date); };
+		origDate.now = function () { return +(new Date); };
 	}
 
 	function isInvalidDate (date) {
@@ -127,55 +127,65 @@ define(['./lib/_base'], function (base) {
 		};
 	}
 
-	if (!isoCompat) {
+	function checkIsoCompat () {
+		if (!isoCompat()) {
 
-		// fix Date constructor
+			// fix Date constructor
 
-		function Date_ (y, m, d, h, mn, s, ms) {
-			var len, result;
+			function Date_ (y, m, d, h, mn, s, ms) {
+				var len, result;
 
-			// Date_ called as function, not constructor
-			if (!(this instanceof Date_)) return origDate.apply(this, arguments);
+				// Date_ called as function, not constructor
+				if (!(this instanceof Date_)) return origDate.apply(this, arguments);
 
-			len = arguments.length;
+				len = arguments.length;
 
-			if (len == 0) {
-				result = new origDate();
+				if (len == 0) {
+					result = new origDate();
+				}
+				else if (len == 1) {
+					result = new origDate(base.isString(y) ? Date.parse(y) : y);
+				}
+				else {
+					result = new origDate(y, m, d == undef ? 1 : d, h || 0, mn || 0, s || 0, ms || 0);
+				}
+
+				result.constructor = Date_;
+
+				return result;
 			}
-			else if (len == 1) {
-				result = new origDate(base.isString(y) ? Date.parse(y) : y);
-			}
-			else {
-				result = new origDate(y, m, d == undef ? 1 : d, h || 0, mn || 0, s || 0, ms || 0);
-			}
 
-			result.constructor = Date_;
+			Date_.now = origDate.now;
+			Date_.UTC = origDate.UTC;
+			Date_.prototype = origProto;
+			Date_.prototype.constructor = Date_;
 
-			return result;
+			Date_.parse = function parse (str) {
+				var result;
+
+				// check for iso date
+				result = isoParse('' + str);
+
+				if (isInvalidDate(result)) {
+					// try original parse()
+					result = origParse(str);
+				}
+
+				return result;
+			};
+
+			Date = Date_;
 		}
-
-		Date_.now = origDate.now;
-		Date_.UTC = origDate.UTC;
-		Date_.prototype = origProto;
-		Date_.prototype.constructor = Date_;
-
-		Date_.parse = function parse (str) {
-			var result;
-
-			// check for iso date
-			result = isoParse('' + str);
-
-			if (isInvalidDate(result)) {
-				// try original parse()
-				result = origParse(str);
-			}
-
-			return result;
-		};
-
-		Date = Date_;
 	}
 
-	return {};
+	checkIsoCompat();
+
+	return {
+		setIsoCompatTest: function (testFunc) {
+			isoCompat = testFunc;
+			checkIsoCompat();
+		}
+	};
 
 });
+}(Date));
