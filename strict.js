@@ -1,4 +1,4 @@
-define(['./object', './string', './array', './function', './json', './xhr'], function (object, string) {
+define(['./object', './string', './date', './array', './function', './json', './xhr'], function (object, string, date) {
 
 	var failTestRx;
 
@@ -15,7 +15,8 @@ define(['./object', './string', './array', './function', './json', './xhr'], fun
 
 	return {
 		failIfShimmed: object.failIfShimmed,
-		setWhitespaceChars: string.setWhitespaceChars
+		setWhitespaceChars: string.setWhitespaceChars,
+		setIsoCompatTest: date.setIsoCompatTest
 	};
 
 });
