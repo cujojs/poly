@@ -14,6 +14,13 @@ poly.js is unique amongst ES5-ish shims because it:
 * is configurable to suit your code
 * can be minified using a has-aware optimizer
 
+Support
+---
+
+Issues: https://github.com/cujojs/poly/issues
+
+Discussion: https://groups.google.com/d/forum/cujojs
+
 Features
 ----
 
