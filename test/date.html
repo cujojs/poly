@@ -98,8 +98,19 @@ curl(['test/testutils', 'poly/date'], function (tester) {
 			'2012-07-21T10:30:09.000Z'
 		);
 
-		// Date.parse
-		var date = new Date();
+		// Date.parse and new Date()
+		function testDateParse (val) {
+			return Date.parse(val);
+		}
+		function testNewDate (val) {
+			return new Date(val);
+		}
+		var
+			date = new Date(),
+			dateFuncsToTest = {
+				testDateParse: testDateParse,
+				testNewDate: testNewDate
+			};
 		date.setYear(2012);
 		date.setMonth(11);
 		date.setDate(25);
@@ -107,53 +118,57 @@ curl(['test/testutils', 'poly/date'], function (tester) {
 		date.setMinutes(0);
 		date.setSeconds(1);
 		date.setMilliseconds(0);
-		tester.assertEquals('Date.parse parses old-style dates still',
-			Date.parse('2012-12-25 00:00:01'),
-			+date
-		);
-		tester.assertEquals('Date.parse parses ISO 8601 date-times (zulu)',
-			Date.parse('2012-12-25T00:00:01Z'),
-			+date - date.getTimezoneOffset() * 60000
-		);
-		tester.assertEquals('Date.parse parses ISO 8601 date-times (with + timezone)',
-			Date.parse('2012-12-25T00:00:01+04:03'),
-			+date - (date.getTimezoneOffset() + (4 * 60) + 3) * 60000
-		);
-		tester.assertEquals('Date.parse parses ISO 8601 date-times (with 0 timezone)',
-			Date.parse('2012-12-25T00:00:01-00:00'),
-			+date - (date.getTimezoneOffset()) * 60000
-		);
-		tester.assertEquals('Date.parse parses ISO 8601 date-times (with - timezone)',
-			Date.parse('2012-12-25T00:00:01-07:15'),
-			+date - (date.getTimezoneOffset() - (7 * 60) - 15) * 60000
-		);
-		tester.assertEquals('Date.parse parses ISO 8601 date-times (with long + year)',
-			Date.parse('+212012-12-25T00:00:01-07:15'),
-			6628316339701000
-		);
-		tester.assertEquals('Date.parse parses ISO 8601 date-times (with long - year)',
-			Date.parse('-212012-12-25T00:00:01-07:15'),
-			-6752588690699000
-		);
-		tester.assertEquals('Date.parse parses ISO 8601 date-times (with only year)',
-			Date.parse('2012T00:00:01-07:15'),
-			1325402101000
-		);
-		tester.assertEquals('Date.parse parses ISO 8601 date-times (with only year and month)',
-			Date.parse('2012-12T00:00:01-07:15'),
-			1354346101000
-		);
-		tester.assertEquals('Date.parse parses ISO 8601 date-times (with only hours and minutes)',
-			Date.parse('2012-12-25T01:30'),
-			1356417000000 - (date.getTimezoneOffset()) * 60000
-		);
-		tester.assertFalse('Date.parse returns invalid date for incorrect ISO 8601 date-times (with long year and no sign)',
-			!!Date.parse('212012-12-25T00:00:01-07:15')
-		);
-		tester.assertFalse('Date.parse returns invalid date for incorrect ISO 8601 date-times (withshort form 8601 date)',
-			!!Date.parse('2120121225')
-		);
 
+		for (var name in dateFuncsToTest) {
+
+			tester.assertEquals(name + ' parses old-style dates still',
+				+dateFuncsToTest[name]('2012-12-25 00:00:01'),
+				+date
+			);
+			tester.assertEquals(name + ' parses ISO 8601 date-times (zulu)',
+				+dateFuncsToTest[name]('2012-12-25T00:00:01Z'),
+				+date - date.getTimezoneOffset() * 60000
+			);
+			tester.assertEquals(name + ' parses ISO 8601 date-times (with + timezone)',
+				+dateFuncsToTest[name]('2012-12-25T00:00:01+04:03'),
+				+date - (date.getTimezoneOffset() + (4 * 60) + 3) * 60000
+			);
+			tester.assertEquals(name + ' parses ISO 8601 date-times (with 0 timezone)',
+				+dateFuncsToTest[name]('2012-12-25T00:00:01-00:00'),
+				+date - (date.getTimezoneOffset()) * 60000
+			);
+			tester.assertEquals(name + ' parses ISO 8601 date-times (with - timezone)',
+				+dateFuncsToTest[name]('2012-12-25T00:00:01-07:15'),
+				+date - (date.getTimezoneOffset() - (7 * 60) - 15) * 60000
+			);
+			tester.assertEquals(name + ' parses ISO 8601 date-times (with long + year)',
+				+dateFuncsToTest[name]('+212012-12-25T00:00:01-07:15'),
+				6628316339701000
+			);
+			tester.assertEquals(name + ' parses ISO 8601 date-times (with long - year)',
+				+dateFuncsToTest[name]('-212012-12-25T00:00:01-07:15'),
+				-6752588690699000
+			);
+			tester.assertEquals(name + ' parses ISO 8601 date-times (with only year)',
+				+dateFuncsToTest[name]('2012T00:00:01-07:15'),
+				1325402101000
+			);
+			tester.assertEquals(name + ' parses ISO 8601 date-times (with only year and month)',
+				+dateFuncsToTest[name]('2012-12T00:00:01-07:15'),
+				1354346101000
+			);
+			tester.assertEquals(name + ' parses ISO 8601 date-times (with only hours and minutes)',
+				+dateFuncsToTest[name]('2012-12-25T01:30'),
+				1356417000000 - (date.getTimezoneOffset()) * 60000
+			);
+			tester.assertFalse(name + ' returns invalid date for incorrect ISO 8601 date-times (with long year and no sign)',
+				!!+dateFuncsToTest[name]('212012-12-25T00:00:01-07:15')
+			);
+			tester.assertFalse(name + ' returns invalid date for incorrect ISO 8601 date-times (withshort form 8601 date)',
+				!!+dateFuncsToTest[name]('2120121225')
+			);
+
+		}
 	}
 
 </script>
