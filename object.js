@@ -49,6 +49,9 @@
  * The poly/strict module will set failIfShimmed to fail for some shims.
  * See the documentation for more information.
  *
+ * IE missing enum properties fixes copied from kangax:
+ * https://github.com/kangax/protolicious/blob/master/experimental/object.for_in.js
+ *
  */
 define(['./lib/_base'], function (base) {
 "use strict";
@@ -56,6 +59,7 @@ define(['./lib/_base'], function (base) {
 	var refObj,
 		refProto,
 		getPrototypeOf,
+		keys,
 		featureMap,
 		shims,
 		undef;
@@ -66,6 +70,17 @@ define(['./lib/_base'], function (base) {
 	getPrototypeOf = typeof {}.__proto__ == 'object'
 		? function (object) { return object.__proto__; }
 		: function (object) { return object.constructor ? object.constructor.prototype : refProto; };
+
+	keys = !hasNonEnumerableProps
+		? _keys
+		: (function (masked) {
+			return function (object) {
+				var result = _keys(object), i = 0, m;
+				while (m = masked[i++]) {
+					if (hasProp(object, m)) result.push(m);
+				}
+			}
+		}([ 'constructor', 'hasOwnProperty', 'isPrototypeOf', 'propertyIsEnumerable', 'toString', 'toLocaleString', 'valueOf' ]));
 
 	featureMap = {
 		'object-create': 'create',
@@ -85,6 +100,11 @@ define(['./lib/_base'], function (base) {
 
 	shims = {};
 
+	function hasNonEnumerableProps () {
+		for (var p in { toString: 1 }) return false;
+		return true;
+	}
+
 	function createFlameThrower (feature) {
 		return function () {
 			throw new Error('poly/object: ' + feature + ' is not safely supported.');
@@ -103,7 +123,7 @@ define(['./lib/_base'], function (base) {
 		return object.hasOwnProperty(name);
 	}
 
-	function keys (object) {
+	function _keys (object) {
 		var result = [];
 		for (var p in object) {
 			if (hasProp(object, p)) {
