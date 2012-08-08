@@ -7,12 +7,14 @@
  *
  * Licensed under the MIT License at:
  * 		http://www.opensource.org/licenses/mit-license.php
- *
- * @version 0.5
  */
 
-define(['./all'], function (all) {
+define(['./object', './string', './date', './array', './function', './json', './xhr'], function (object, string, date) {
 
-	return all;
+	return {
+		failIfShimmed: object.failIfShimmed,
+		setWhitespaceChars: string.setWhitespaceChars,
+		setIsoCompatTest: date.setIsoCompatTest
+	};
 
 });
