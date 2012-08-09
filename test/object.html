@@ -45,7 +45,7 @@ var natives = {
 };
 
 // First, test that poly/object doesn't clobber native methods
-curl(['test/testutils', 'poly/object'], function (tester) {
+curl(['test/testutils', 'poly/object', 'domReady!'], function (tester) {
 
 	var test = Object;
 	for (var m in natives) {

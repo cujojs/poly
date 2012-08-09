@@ -24,7 +24,7 @@ curl = {
 
 // TODO: test that poly/xhr doesn't clobber native methods
 
-curl(['test/testutils', 'poly/xhr'], function (tester) {
+curl(['test/testutils', 'poly/xhr', 'domReady!'], function (tester) {
 
 	tester.assertTrue('XHR exists as global function', function () {
 		return typeof XMLHttpRequest != 'undefined';

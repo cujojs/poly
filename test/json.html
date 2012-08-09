@@ -26,7 +26,7 @@ curl = {
 var nativeJson = window.JSON;
 
 // First, test that poly!poly/json doesn't clobber native methods
-curl(['test/testutils', 'poly/json'], function (tester) {
+curl(['test/testutils', 'poly/json', 'domReady!'], function (tester) {
 
 	// Note: these tests won't run in evirons that don't support JSON
 	if (nativeJson) {

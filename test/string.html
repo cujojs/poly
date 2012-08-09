@@ -29,7 +29,7 @@ var natives = {
 };
 
 // First, test that poly/string doesn't clobber native methods
-curl(['test/testutils', 'poly/string'], function (tester) {
+curl(['test/testutils', 'poly/string', 'domReady!'], function (tester) {
 
 	var test = " testString ";
 	// Note: these tests won't run in evirons that don't support .trim()

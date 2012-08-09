@@ -34,7 +34,7 @@ var natives = {
 };
 
 // First, test that poly/array doesn't clobber native methods
-curl(['test/testutils', 'poly/array'], function (tester) {
+curl(['test/testutils', 'poly/array', 'domReady!'], function (tester) {
 
 	var test = [];
 	// Note: these tests won't run in evirons that don't support .forEach()

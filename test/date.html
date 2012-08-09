@@ -32,7 +32,7 @@ var protoNatives = {
 };
 
 // First, test that poly/date doesn't clobber native methods
-curl(['test/testutils', 'poly/date'], function (tester) {
+curl(['test/testutils', 'poly/date', 'domReady!'], function (tester) {
 
 	var test;
 
@@ -161,10 +161,14 @@ curl(['test/testutils', 'poly/date'], function (tester) {
 				+dateFuncsToTest[name]('2012-12-25T01:30'),
 				1356417000000 - (date.getTimezoneOffset()) * 60000
 			);
-			tester.assertFalse(name + ' returns invalid date for incorrect ISO 8601 date-times (with long year and no sign)',
+			tester.assertEquals(name + ' interprets ISO 8601 date-times with years in the first century',
+				+dateFuncsToTest[name]('0012-12-25T00:00:01-07:15'),
+				-61757484299000
+			);
+			tester.assertFalse('minor: ' + name + ' returns invalid date for incorrect ISO 8601 date-times (with long year and no sign)',
 				!!+dateFuncsToTest[name]('212012-12-25T00:00:01-07:15')
 			);
-			tester.assertFalse(name + ' returns invalid date for incorrect ISO 8601 date-times (with short form 8601 date)',
+			tester.assertFalse('minor: ' + name + ' returns invalid date for incorrect ISO 8601 date-times (with short form 8601 date)',
 				!!+dateFuncsToTest[name]('2120121225')
 			);
 
