@@ -130,22 +130,22 @@ curl(['test/testutils', 'poly/date'], function (tester) {
 				+date - date.getTimezoneOffset() * 60000
 			);
 			tester.assertEquals(name + ' parses ISO 8601 date-times (with + timezone)',
-				+dateFuncsToTest[name]('2012-12-25T00:00:01+04:03'),
-				+date - (date.getTimezoneOffset() + (4 * 60) + 3) * 60000
+				+dateFuncsToTest[name]('2012-12-25T00:00:01+04:30'),
+				+date - (date.getTimezoneOffset() + (4 * 60 + 30)) * 60000
 			);
 			tester.assertEquals(name + ' parses ISO 8601 date-times (with 0 timezone)',
 				+dateFuncsToTest[name]('2012-12-25T00:00:01-00:00'),
 				+date - (date.getTimezoneOffset()) * 60000
 			);
 			tester.assertEquals(name + ' parses ISO 8601 date-times (with - timezone)',
-				+dateFuncsToTest[name]('2012-12-25T00:00:01-07:15'),
-				+date - (date.getTimezoneOffset() - (7 * 60) - 15) * 60000
+				+dateFuncsToTest[name]('2012-12-25T00:00:01-06:15'),
+				+date - (date.getTimezoneOffset() - (6 * 60 + 15)) * 60000
 			);
-			tester.assertEquals(name + ' parses ISO 8601 date-times (with long + year)',
+			tester.assertEquals(name + ' parses ISO 8601 date-times (with long +year)',
 				+dateFuncsToTest[name]('+212012-12-25T00:00:01-07:15'),
 				6628316339701000
 			);
-			tester.assertEquals(name + ' parses ISO 8601 date-times (with long - year)',
+			tester.assertEquals(name + ' parses ISO 8601 date-times (with long -year)',
 				+dateFuncsToTest[name]('-212012-12-25T00:00:01-07:15'),
 				-6752588690699000
 			);
@@ -164,7 +164,7 @@ curl(['test/testutils', 'poly/date'], function (tester) {
 			tester.assertFalse(name + ' returns invalid date for incorrect ISO 8601 date-times (with long year and no sign)',
 				!!+dateFuncsToTest[name]('212012-12-25T00:00:01-07:15')
 			);
-			tester.assertFalse(name + ' returns invalid date for incorrect ISO 8601 date-times (withshort form 8601 date)',
+			tester.assertFalse(name + ' returns invalid date for incorrect ISO 8601 date-times (with short form 8601 date)',
 				!!+dateFuncsToTest[name]('2120121225')
 			);
 

@@ -31,7 +31,7 @@ define(['./lib/_base'], function (base) {
 	isoCompat = function () { return origDate.parse('+275760-09-13T00:00:00.000Z') == maxDate; };
 	// can't even have spaces in iso date strings
 	// in Chrome and FF, the colon in the timezone is optional, but IE, Opera, and Safari need it
-	isoParseRx = /^([+\-]\d{6}|\d{4})(?:-(\d{2}))?(?:-(\d{2}))?(?:T(\d{2}):(\d{2})(?::(\d{2})(?:.(\d{1,3}))?)?(?:Z|([+\-]\d{2})(?::(\d{2}))?)?)?$/;
+	isoParseRx = /^([+\-]\d{6}|\d{4})(?:-(\d{2}))?(?:-(\d{2}))?(?:T(\d{2}):(\d{2})(?::(\d{2})(?:.(\d{1,3}))?)?(?:Z|([+\-])(\d{2})(?::(\d{2}))?)?)?$/;
 
 	featureMap = {
 		'date-now': 'now',
@@ -58,7 +58,7 @@ define(['./lib/_base'], function (base) {
 	}
 
 	function isoParse (str) {
-		// parses iso8601 simplified dates, such as
+		// parses simplified iso8601 dates, such as
 		// yyyy-mm-ddThh:mm:ssZ
 		// +yyyyyy-mm-ddThh:mm:ss-06:30
 		var result;
@@ -67,7 +67,7 @@ define(['./lib/_base'], function (base) {
 		result = invalidDate;
 
 		// fast parse
-		str.replace(isoParseRx, function (a, y, m, d, h, n, s, ms, tzh, tzm) {
+		str.replace(isoParseRx, function (a, y, m, d, h, n, s, ms, tzs, tzh, tzm) {
 			var adjust = 0;
 
 			// Date.UTC handles years between 0 and 100 as 2-digit years, but
@@ -82,13 +82,13 @@ define(['./lib/_base'], function (base) {
 
 			result = Date.UTC(y, (m || 1) - 1, d || 1, h || 0, n || 0, s || 0, ms || 0) + adjust;
 
-			tzh = tzh || 0;
-			tzm = tzm || 0;
+			tzh = +(tzs + tzh); // convert to signed number
+			tzm = +(tzs + tzm); // convert to signed number
 
 			if (tzh || tzm) {
-				result += (tzh + tzm / 60) * 36e5;
+				result -= (tzh + tzm / 60) * 36e5;
 				// check if time zone is out of bounds
-				if (tzh > 23 || tzh < 23 || tzm > 59) result = invalidDate;
+				if (tzh > 23 || tzh < -23 || tzm > 59) result = invalidDate;
 				// check if time zone pushed us over maximum date value
 				if (result > maxDate) result = invalidDate;
 			}
