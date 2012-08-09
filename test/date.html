@@ -105,12 +105,12 @@ curl(['test/testutils', 'poly/date'], function (tester) {
 		function testNewDate (val) {
 			return new Date(val);
 		}
-		var
-			date = new Date(),
-			dateFuncsToTest = {
-				testDateParse: testDateParse,
-				testNewDate: testNewDate
-			};
+		var date, dateFuncsToTest;
+		date = new Date();
+		dateFuncsToTest = {
+			testDateParse:testDateParse,
+			testNewDate:testNewDate
+		};
 		date.setYear(2012);
 		date.setMonth(11);
 		date.setDate(25);
@@ -122,7 +122,7 @@ curl(['test/testutils', 'poly/date'], function (tester) {
 		for (var name in dateFuncsToTest) {
 
 			tester.assertEquals(name + ' parses old-style dates still',
-				+dateFuncsToTest[name]('2012-12-25 00:00:01'),
+				+dateFuncsToTest[name]('2012/12/25 00:00:01'),
 				+date
 			);
 			tester.assertEquals(name + ' parses ISO 8601 date-times (zulu)',
