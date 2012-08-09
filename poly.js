@@ -13,6 +13,13 @@
 
 define(['./all'], function (all) {
 
-	return all;
+	var poly = {};
+
+	// copy all
+	for (var p in all) poly[p] = all[p];
+
+	poly.version = '0.5';
+
+	return poly;
 
 });
