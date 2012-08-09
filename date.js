@@ -76,7 +76,7 @@ define(['./lib/_base'], function (base) {
 			// subtract the 400 years (as milliseconds) afterwards, we can avoid
 			// this problem. (learned of this trick from kriskowal/es5-shim.)
 			if (y >= 0 && y < 100) {
-				y += 400;
+				y = +y + 400; // convert to number
 				adjust = -126227808e5; // 400 years
 			}
 
