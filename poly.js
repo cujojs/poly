@@ -8,7 +8,7 @@
  * Licensed under the MIT License at:
  * 		http://www.opensource.org/licenses/mit-license.php
  *
- * @version 0.5
+ * @version 0.5.1
  */
 
 define(['./all'], function (all) {
@@ -18,7 +18,7 @@ define(['./all'], function (all) {
 	// copy all
 	for (var p in all) poly[p] = all[p];
 
-	poly.version = '0.5';
+	poly.version = '0.5.1';
 
 	return poly;
 

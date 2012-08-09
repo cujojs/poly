@@ -1,7 +1,7 @@
 Code to modern standards. Run everywhere.
 =========
 
-version: 0.5
+version: 0.5.1
 License: MIT
 
 poly.js is the a collection of AMD modules that shim (aka "polyfill")
@@ -91,6 +91,13 @@ poly/xhr:
 ---
 
 * (global) XMLHttpRequest
+
+poly/date:
+---
+
+* Date.parse now supports simplified ISO8601 date strings
+* new Date() now supports simplified ISO8601 date strings
+* date.toISOString() returns a simplified ISO8601 date string
 
 poly/all (also just "poly"):
 ---
