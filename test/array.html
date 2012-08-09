@@ -259,24 +259,26 @@ curl(['test/testutils', 'poly/array'], function (tester) {
 				return ex.message;
 			}
 		}, 7);
-		tester.assertTrue('Array methods should throw TypeError when applied to null', function () {
-			try {
-				[].forEach.call(null, function (ch) {});
-				return false;
-			}
-			catch (ex) {
-				return ex instanceof TypeError;
-			}
-		});
-		tester.assertTrue('Array methods should throw TypeError when applied to undefined', function () {
-			try {
-				[].forEach.call(void 0, function (ch) {});
-				return false;
-			}
-			catch (ex) {
-				return ex instanceof TypeError;
-			}
-		});
+
+//		// these won't run correctly on most browsers since .call(null) implies .call(window)
+//		tester.assertTrue('Array methods should throw TypeError when applied to null', function () {
+//			try {
+//				[].forEach.call(null, function (ch) {});
+//				return false;
+//			}
+//			catch (ex) {
+//				return ex instanceof TypeError;
+//			}
+//		});
+//		tester.assertTrue('Array methods should throw TypeError when applied to undefined', function () {
+//			try {
+//				[].forEach.call(void 0, function (ch) {});
+//				return false;
+//			}
+//			catch (ex) {
+//				return ex instanceof TypeError;
+//			}
+//		});
 
 	}
 

@@ -107,10 +107,15 @@ curl(['test/testutils', 'poly/object'], function (tester) {
 				child = Object.create(parent, descriptor);
 			return child.readonly == 'some value' && child.readwrite == 'another value';
 		});
-		tester.assertTrue('Object.create should create ancestorless object when called without params', function () {
-			var child = Object.create();
-			return child.constructor == Object;
-		});
+		tester.assertEquals('Object.create should throw when called without params', function () {
+			var ex;
+			try { Object.create(); } catch (e) { ex = e; }
+			return ex && ex.name;
+		}, 'TypeError');
+		tester.assertEquals('Object.create should create ancestorless object when called with null', function () {
+			var child = Object.create(null);
+			return typeof child;
+		}, 'object');
 
 		// test faked shims
 		tester.assertTrue('Object.freeze shouldn\'t throw', function () {
