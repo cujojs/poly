@@ -36,7 +36,7 @@ curl(['test/testutils', 'poly/json', 'domReady!'], function (tester) {
 }).next(['curl/_privileged'], function (priv) {
 
 	// remove JSON and poly/json
-	delete window.JSON;
+	try { delete window.JSON; } catch (ex) {}
 
 // we have to force-load the json2 inner module here due to curl caching issues
 }).next(['test/testutils', 'poly/support/json2'], function (tester) {

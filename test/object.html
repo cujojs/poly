@@ -150,7 +150,7 @@ curl(['test/testutils', 'poly/object', 'domReady!'], function (tester) {
 				canSetProp = false;
 			}
 			tester.assertEquals('Object.isExtensible should return false on non-expando objects (IE only)', function () {
-				return Object.isExtensible(document.documentElement);
+				return Object.isExtensible(document);
 			}, canSetProp);
 		}());
 		}

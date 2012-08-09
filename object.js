@@ -212,15 +212,16 @@ define(['./lib/_base'], function (base) {
 	if (!has('object-isextensible')) {
 		Object.isExtensible = shims.isExtensible = function isExtensible (object) {
 			var prop = '_poly_';
-			// create unique property name
-			while (prop in object) prop += '_';
-			// try to set it
 			try {
+				// create unique property name
+				while (prop in object) prop += '_';
+				// try to set it
 				object[prop] = 1;
 				return hasProp(object, prop);
 			}
+			catch (ex) { return false; }
 			finally {
-				delete object[prop];
+				try { delete object[prop]; } catch (ex) { /* squelch */ }
 			}
 		};
 	}
