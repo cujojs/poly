@@ -79,6 +79,7 @@ define(['./lib/_base'], function (base) {
 				while (m = masked[i++]) {
 					if (hasProp(object, m)) result.push(m);
 				}
+				return result;
 			}
 		}([ 'constructor', 'hasOwnProperty', 'isPrototypeOf', 'propertyIsEnumerable', 'toString', 'toLocaleString', 'valueOf' ]));
 
@@ -136,18 +137,18 @@ define(['./lib/_base'], function (base) {
 	if (!has('object-create')) {
 		Object.create = shims.create = function create (proto, props) {
 			var obj;
-			if (proto) {
-				PolyBase.prototype = proto;
-				obj = new PolyBase(props);
-				PolyBase.prototype = null;
-			}
-			else {
-				obj = {};
-			}
+
+			if (typeof proto != 'object') throw new TypeError('prototype is not of type Object or Null.');
+
+			PolyBase.prototype = proto;
+			obj = new PolyBase(props);
+			PolyBase.prototype = null;
+
 			if (arguments.length > 1) {
 				// defineProperties could throw depending on `shouldThrow`
 				Object.defineProperties(obj, props);
 			}
+
 			return obj;
 		};
 	}
