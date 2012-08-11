@@ -37,9 +37,11 @@ curl(['test/testutils', 'poly/json', 'domReady!'], function (tester) {
 
 	// remove JSON and poly/json
 	try { delete window.JSON; } catch (ex) {}
+		delete priv.cache['poly/json'];
+		delete priv.cache['poly/support/json2'];
 
 // we have to force-load the json2 inner module here due to curl caching issues
-}).next(['test/testutils', 'poly/support/json2'], function (tester) {
+}).next(['test/testutils', 'poly/json'], function (tester) {
 
 	tester.assertTrue('JSON exists as global object', function () {
 		return typeof JSON == 'object';
