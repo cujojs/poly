@@ -8,8 +8,6 @@
  * Licensed under the MIT License at:
  * 		http://www.opensource.org/licenses/mit-license.php
  *
- * TODO: document that JSON module is always downloaded at run-time unless
- * dev explicitly mentions it in build instructions
  */
 define(['./support/json2'], function (JSON) {
 	return JSON;
