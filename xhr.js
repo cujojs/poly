@@ -9,7 +9,7 @@
  * 		http://www.opensource.org/licenses/mit-license.php
  *
  */
-define(['./lib/_base'], function (base) {
+define(function () {
 
 	var progIds, xhrCtor;
 
