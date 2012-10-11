@@ -261,8 +261,8 @@ if (typeof "".trim != 'function') {
 curl({ preloads: preloads });
 ```
 
-JSON2
+JSON3
 ===
 
-JSON support via Douglas Crockford's JSON2 lib at:
-https://github.com/douglascrockford/JSON-js.git
+JSON support via Kit Cambridge's JSON3 lib at:
+https://github.com/bestiejs/json3.git
