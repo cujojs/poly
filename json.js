@@ -9,6 +9,6 @@
  * 		http://www.opensource.org/licenses/mit-license.php
  *
  */
-define(['./support/json2'], function (JSON) {
+define(['./support/json3'], function (JSON) {
 	return JSON;
 });

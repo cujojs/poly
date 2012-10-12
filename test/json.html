@@ -2,7 +2,7 @@
 <html lang="en">
 
 <head>
-<title>xhr tests</title>
+<title>json tests</title>
 
 <script>
 
@@ -38,7 +38,7 @@ curl(['test/testutils', 'poly/json', 'domReady!'], function (tester) {
 	// remove JSON and poly/json
 	try { delete window.JSON; } catch (ex) {}
 		delete priv.cache['poly/json'];
-		delete priv.cache['poly/support/json2'];
+		delete priv.cache['poly/support/json3'];
 
 // we have to force-load the json2 inner module here due to curl caching issues
 }).next(['test/testutils', 'poly/json'], function (tester) {
