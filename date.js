@@ -20,10 +20,13 @@ define(['./lib/_base'], function (base) {
 		invalidDate,
 		isoCompat,
 		isoParseRx,
+		ownProp,
 		undef;
 
 	origProto = origDate.prototype;
 	origParse = origDate.parse;
+
+	ownProp = Object.prototype.hasOwnProperty;
 
 	maxDate = 8.64e15;
 	invalidDate = NaN;
@@ -119,6 +122,7 @@ define(['./lib/_base'], function (base) {
 	}
 
 	if (!has('date-tojson')) {
+
 		origProto.toJSON = function toJSON (key) {
 			// key arg is ignored by Date objects, but since this function
 			// is generic, other Date-like objects could use the key arg.
@@ -129,32 +133,32 @@ define(['./lib/_base'], function (base) {
 	}
 
 	function checkIsoCompat () {
-		if (!isoCompat()) {
+		// fix Date constructor
 
-			// fix Date constructor
+		function Date_ (y, m, d, h, mn, s, ms) {
+			var len, result;
 
-			function Date_ (y, m, d, h, mn, s, ms) {
-				var len, result;
+			// Date_ called as function, not constructor
+			if (!(this instanceof Date_)) return origDate.apply(this, arguments);
 
-				// Date_ called as function, not constructor
-				if (!(this instanceof Date_)) return origDate.apply(this, arguments);
+			len = arguments.length;
 
-				len = arguments.length;
-
-				if (len == 0) {
-					result = new origDate();
-				}
-				else if (len == 1) {
-					result = new origDate(base.isString(y) ? Date.parse(y) : y);
-				}
-				else {
-					result = new origDate(y, m, d == undef ? 1 : d, h || 0, mn || 0, s || 0, ms || 0);
-				}
-
-				result.constructor = Date_;
-
-				return result;
+			if (len === 0) {
+				result = new origDate();
 			}
+			else if (len === 1) {
+				result = new origDate(base.isString(y) ? Date.parse(y) : y);
+			}
+			else {
+				result = new origDate(y, m, d == undef ? 1 : d, h || 0, mn || 0, s || 0, ms || 0);
+			}
+
+			result.constructor = Date_;
+
+			return result;
+		}
+
+		if (!isoCompat()) {
 
 			Date_.now = origDate.now;
 			Date_.UTC = origDate.UTC;
@@ -174,6 +178,15 @@ define(['./lib/_base'], function (base) {
 
 				return result;
 			};
+
+			// Unfortunate. See cujojs/poly#11
+			// Copy any owned props that may have been previously added to
+			// the Date constructor by 3rd party libs.
+			for(var p in Date) {
+				if(ownProp.call(Date, p) && !ownProp.call(Date_, p)) {
+					Date_[p] = Date[p];
+				}
+			}
 
 			Date = Date_;
 		}
