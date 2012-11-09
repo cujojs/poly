@@ -182,9 +182,9 @@ define(['./lib/_base'], function (base) {
 			// Unfortunate. See cujojs/poly#11
 			// Copy any owned props that may have been previously added to
 			// the Date constructor by 3rd party libs.
-			for(var p in Date) {
-				if(ownProp.call(Date, p) && !ownProp.call(Date_, p)) {
-					Date_[p] = Date[p];
+			for(var p in origDate) {
+				if(ownProp.call(origDate, p) && !ownProp.call(Date_, p)) {
+					Date_[p] = origDate[p];
 				}
 			}
 
