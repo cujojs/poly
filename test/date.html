@@ -79,6 +79,8 @@ curl(['test/testutils', 'poly/date', 'domReady!'], function (tester) {
 		}
 
 		// test now
+		// NOTE: This *can* fail (albeit rarely!), since now and date
+		// are created in separate statements.
 		var now = Date.now(), date = new Date();
 		tester.assertEquals('now returns current msec since epoch', +date, now);
 
