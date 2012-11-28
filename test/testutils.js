@@ -41,5 +41,5 @@ define(['curl'], function (curl) {
 		}
 
 
-	}
+	};
 });
