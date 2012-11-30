@@ -5,6 +5,8 @@
  *
  * poly is part of the cujo.js family of libraries (http://cujojs.com/)
  *
+ * Based on NobleJS's setImmediate. (https://github.com/NobleJS/setImmediate)
+ *
  * Licensed under the MIT License at:
  *      http://www.opensource.org/licenses/mit-license.php
  *
