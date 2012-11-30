@@ -62,12 +62,13 @@ curl(['poly/setImmediate', 'domReady!'], function () {
 
 	function handler () {
 		changed = true;
-	};
+	}
 
-	setImmediate(handler);
-	clearImmediate(handler);
+	clearImmediate(setImmediate(handler));
 
-	tester.assertFalse('setImmediate is not called after clearImmediate is called', changed);
+	setTimeout(function () {
+		tester.assertFalse('setImmediate is not called after clearImmediate is called', changed);
+	}, 100);
 }).next(['test/testutils'], function (tester) {
 	var expected, recorded, handle;
 
