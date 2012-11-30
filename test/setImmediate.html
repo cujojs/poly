@@ -88,7 +88,7 @@ curl(['setImmediate', 'domReady!'], function () {
 		var truth = recorded.toString() == expected;
 
 		tester.assertTrue('non-cleared invocations of the handler occur', truth);
-	}, 1000);
+	}, 100);
 });
 
 </script>
