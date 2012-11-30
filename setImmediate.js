@@ -199,10 +199,6 @@ define(['./lib/_base'], function (base) {
 		return postMessageIsAsynchronous;
 	});
 
-	add('message-channel', function (g) {
-		return !!g.MessageChannel;
-	});
-
 	add('ready-state-change', function (g) {
 		return 'document' in g && 'onreadystatechange' in g.document.createElement('script');
 	});
@@ -219,9 +215,6 @@ define(['./lib/_base'], function (base) {
 			if (has('asynchronous-post-message')) {
 				installPostMessageImplementation(attachTo);
 			}
-			else if (has('message-channel')) {
-				installMessageChannelImplementation(attachTo);
-			}
 			else if (has('ready-state-change')) {
 				installReadyStateChangeImplementation(attachTo);
 			}
@@ -232,4 +225,3 @@ define(['./lib/_base'], function (base) {
 		}
 	}
 });
-
