@@ -253,12 +253,25 @@ curl(['test/testutils', 'poly/array', 'domReady!'], function (tester) {
 			alo.length = 13;
 			alo[1] = alo[3] = alo[4] = alo[7] = alo[8] = alo[9] = alo[10] = 1;
 			try {
-				return [].reduce.call('abcdefg', function (val, ch) { return val + 1; }, 0);
+				return [].reduce.call(alo, function (val, one) { return val + one; }, 0);
 			}
 			catch (ex) {
 				return ex.message;
 			}
 		}, 7);
+		tester.assertEquals('// Array methods should not skip over undefined items in array (fails in IE)', function () {
+			// create a normal array with undefined items
+			// reduce should count every item
+			var arr = [1, void 0, 1, void 0, 1];
+			try {
+				return arr.reduce(function (val, num) {
+					return val + 1;
+				}, 0);
+			}
+			catch (ex) {
+				return ex.message;
+			}
+		}, 5);
 
 //		// these won't run correctly on most browsers since .call(null) implies .call(window)
 //		tester.assertTrue('Array methods should throw TypeError when applied to null', function () {
