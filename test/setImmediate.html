@@ -1,0 +1,104 @@
+<!DOCTYPE HTML>
+<html lang="en">
+
+<head>
+<title>setImmediate tests</title>
+
+<script>
+
+	curl = {
+		baseUrl: '../',
+		paths: {
+			curl: 'test/curl'
+		},
+		packages: [
+			{ name: 'poly', location: '.', main: 'poly' }
+		]
+	};
+
+</script>
+
+<script src="curl.js"></script>
+
+<script>
+
+curl(['poly/setImmediate', 'domReady!'], function () {
+}).next(['test/testutils'], function (tester) {
+	var called = false;
+
+	setImmediate(function () {
+		called = true;
+	});
+
+	tester.assertFalse('setImmediate is not immediately called', called);
+}).next(['test/testutils'], function (tester) {
+	var called = false;
+
+	setImmediate(function () {
+		called = true;
+		tester.assertTrue('setImmediate is eventually called.', called);
+	});
+}).next(['test/testutils'], function (tester) {
+	var expected = {};
+
+	function handler (actual) {
+		tester.assertEquals('The first argument passed to the handler is the same object that was passed to setImmediate as the second argument.', expected, actual);
+	}
+
+	setImmediate(handler, expected);
+}).next(['test/testutils'], function (tester) {
+	var expected1, expected2;
+
+	expected1 = {};
+	expected2 = {};
+
+	function handler (actual1, actual2) {
+		tester.assertEquals('The second argument passed to the handler is the same object as was passed to setImmediate as the third argument.', expected2, actual2);
+	}
+
+	setImmediate(handler, expected1, expected2);
+}).next(['test/testutils'], function (tester) {
+	var changed = false;
+
+	function handler () {
+		changed = true;
+	}
+
+	clearImmediate(setImmediate(handler));
+
+	setTimeout(function () {
+		tester.assertFalse('setImmediate is not called after clearImmediate is called', changed);
+	}, 100);
+}).next(['test/testutils'], function (tester) {
+	var expected, recorded, handle;
+
+	expected = ['A', 'D'];
+	recorded = [];
+
+	function handler (arg) {
+		recorded.push(arg);
+	}
+
+	setImmediate(handler, 'A');
+	clearImmediate(setImmediate(handler, 'B'));
+	handle = setImmediate(handler, 'C');
+	setImmediate(handler, 'D');
+	clearImmediate(handle);
+
+	setTimeout(function () {
+		var truth = recorded.toString() == expected;
+
+		tester.assertTrue('non-cleared invocations of the handler occur', truth);
+	}, 100);
+});
+
+</script>
+
+</head>
+
+<body>
+
+<div id="output"></div>
+
+</body>
+</html>
