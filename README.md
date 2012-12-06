@@ -49,6 +49,12 @@ poly/json:
 
 * (global) JSON
 
+poly/setImmediate:
+---
+
+* (global) setImmediate
+* (global) clearImmediate
+
 poly/object:
 ---
 
