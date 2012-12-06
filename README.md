@@ -14,6 +14,8 @@ poly.js is unique amongst ES5-ish shims because it:
 * is configurable to suit your code
 * can be minified using a has-aware optimizer
 
+Note: poly/strict has been deprecated. See below.
+
 Support
 ---
 
@@ -114,10 +116,21 @@ create your own version of poly/all to be stricter.
 
 The "poly" main module will load poly/all.
 
+poly/es5:
+---
+
+This *convenience module* loads and applies all es5 shims.  Shims, such as
+poly/setImmediate are not included.
+
 poly/strict:
 ---
 
-This *convenience module* loads and applies all shims, but ensures that
+This is module is deprecated.  Please use poly/es5-strict.
+
+poly/es5-strict:
+---
+
+This *convenience module* loads and applies all es5 shims, but ensures that
 whitespace characters comply with ES5 specs (many browsers don't do this)
 and fails loudly for the following object shims that can't reasonably
 be shimmed to comply with ES5:
