@@ -31,6 +31,10 @@ var protoNatives = {
 	toISOString: Date.prototype.toISOString
 };
 
+// Add a property to original Date constructor so we can test
+// that it is preserved after poly has replaced window.Date.
+Date.addedProperty = {};
+
 // First, test that poly/date doesn't clobber native methods
 curl(['test/testutils', 'poly/date', 'domReady!'], function (tester) {
 
@@ -75,6 +79,8 @@ curl(['test/testutils', 'poly/date', 'domReady!'], function (tester) {
 		}
 
 		// test now
+		// NOTE: This *can* fail (albeit rarely!), since now and date
+		// are created in separate statements.
 		var now = Date.now(), date = new Date();
 		tester.assertEquals('now returns current msec since epoch', +date, now);
 
@@ -97,6 +103,10 @@ curl(['test/testutils', 'poly/date', 'domReady!'], function (tester) {
 			date.toISOString(),
 			'2012-07-21T10:30:09.000Z'
 		);
+
+		tester.assertEquals('props added to Date before poly are preserved',
+			Date.addedProperty,
+			ctor.addedProperty);
 
 		// Date.parse and new Date()
 		function testDateParse (val) {
