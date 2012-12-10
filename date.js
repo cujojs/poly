@@ -135,14 +135,40 @@ define(['./lib/_base'], function (base) {
 	function checkIsoCompat () {
 		// fix Date constructor
 
+		var newDate = (function () {
+			// Replacement Date constructor
+			return function Date (y, m, d, h, mn, s, ms) {
+				var len, result;
+
+				// Date called as function, not constructor
+				if (!(this instanceof newDate)) return origDate.apply(this, arguments);
+
+				len = arguments.length;
+
+				if (len === 0) {
+					result = new origDate();
+				}
+				else if (len === 1) {
+					result = new origDate(base.isString(y) ? newDate.parse(y) : y);
+				}
+				else {
+					result = new origDate(y, m, d == undef ? 1 : d, h || 0, mn || 0, s || 0, ms || 0);
+				}
+
+				result.constructor = newDate;
+
+				return result;
+			};
+		}());
+
 		if (!isoCompat()) {
 
-			Date_.now = origDate.now;
-			Date_.UTC = origDate.UTC;
-			Date_.prototype = origProto;
-			Date_.prototype.constructor = Date_;
+			newDate.now = origDate.now;
+			newDate.UTC = origDate.UTC;
+			newDate.prototype = origProto;
+			newDate.prototype.constructor = newDate;
 
-			Date_.parse = function parse (str) {
+			newDate.parse = function parse (str) {
 				var result;
 
 				// check for iso date
@@ -159,36 +185,12 @@ define(['./lib/_base'], function (base) {
 			// Unfortunate. See cujojs/poly#11
 			// Copy any owned props that may have been previously added to
 			// the Date constructor by 3rd party libs.
-			copyPropsSafely(Date_, origDate);
+			copyPropsSafely(newDate, origDate);
 
-			Date = Date_;
+			Date = newDate;
 		}
 		else if (Date != origDate) {
 			Date = origDate;
-		}
-
-		// Replacement Date constructor
-		function Date_ (y, m, d, h, mn, s, ms) {
-			var len, result;
-
-			// Date_ called as function, not constructor
-			if (!(this instanceof Date_)) return origDate.apply(this, arguments);
-
-			len = arguments.length;
-
-			if (len === 0) {
-				result = new origDate();
-			}
-			else if (len === 1) {
-				result = new origDate(base.isString(y) ? Date.parse(y) : y);
-			}
-			else {
-				result = new origDate(y, m, d == undef ? 1 : d, h || 0, mn || 0, s || 0, ms || 0);
-			}
-
-			result.constructor = Date_;
-
-			return result;
 		}
 
 	}
