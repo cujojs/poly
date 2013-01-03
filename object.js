@@ -52,24 +52,42 @@
  * IE missing enum properties fixes copied from kangax:
  * https://github.com/kangax/protolicious/blob/master/experimental/object.for_in.js
  *
+ * TODO: fix Object#propertyIsEnumerable for IE's non-enumerable props to match Object.keys()
+ * TODO: somehow fix Object.getOwnPropertyNames since it doesn't return non-enumerables
  */
 define(['./lib/_base'], function (base) {
 "use strict";
 
 	var refObj,
 		refProto,
+		has__proto__,
+		hasNonEnumerableProps,
 		getPrototypeOf,
 		keys,
 		featureMap,
 		shims,
+		secrets,
+		protoSecretProp,
+		hop = 'hasOwnProperty',
 		undef;
 
 	refObj = Object;
 	refProto = refObj.prototype;
 
-	getPrototypeOf = typeof {}.__proto__ == 'object'
+	has__proto__ = typeof {}.__proto__ == 'object';
+
+	hasNonEnumerableProps = (function () {
+		for (var p in { valueOf: 1 }) return false;
+		return true;
+	}());
+
+	getPrototypeOf = has__proto__
 		? function (object) { return object.__proto__; }
-		: function (object) { return object.constructor ? object.constructor.prototype : refProto; };
+		: function (object) {
+			return protoSecretProp
+				? this[protoSecretProp](secrets.proto)
+				: object.constructor ? object.constructor.prototype : refProto;
+		};
 
 	keys = !hasNonEnumerableProps
 		? _keys
@@ -101,10 +119,11 @@ define(['./lib/_base'], function (base) {
 
 	shims = {};
 
-	function hasNonEnumerableProps () {
-		for (var p in { toString: 1 }) return false;
-		return true;
-	}
+	secrets = {
+		proto: {}
+	};
+
+	protoSecretProp = !has('object-getprototypeof') && !has__proto__ && hasNonEnumerableProps && 'hasOwnProperty';
 
 	function createFlameThrower (feature) {
 		return function () {
@@ -134,6 +153,13 @@ define(['./lib/_base'], function (base) {
 		return result;
 	}
 
+	if (hasNonEnumerableProps) (function (_hop) {
+		refProto[hop] = function (name) {
+			if (name == hop) return false;
+			return _hop.call(this, name);
+		};
+	}(refProto[hop]));
+
 	if (!has('object-create')) {
 		Object.create = shims.create = function create (proto, props) {
 			var obj;
@@ -141,11 +167,20 @@ define(['./lib/_base'], function (base) {
 			if (typeof proto != 'object') throw new TypeError('prototype is not of type Object or Null.');
 
 			PolyBase.prototype = proto;
-			obj = new PolyBase(props);
+			obj = new PolyBase();
 			PolyBase.prototype = null;
 
+			// provide a mechanism for retrieving the prototype in IE 6-8
+			if (protoSecretProp) {
+				var orig = obj[protoSecretProp];
+				obj[protoSecretProp] = function (name) {
+					if (name == secrets.proto) return proto;
+					return orig.call(this, name);
+				};
+			}
+
 			if (arguments.length > 1) {
-				// defineProperties could throw depending on `shouldThrow`
+				// defineProperties could throw depending on `failIfShimmed`
 				Object.defineProperties(obj, props);
 			}
 
