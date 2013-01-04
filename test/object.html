@@ -169,10 +169,17 @@ curl(['test/testutils', 'poly/object', 'domReady!'], function (tester) {
 		});
 
 		tester.assertTrue('Object.getPrototypeOf should return prototype when using constructors', function () {
-			var proto = {};
-			function Parent () {}
-			Parent.prototype = proto;
-			var child = new Parent();
+			var proto = {
+				foo: 1,
+				bar: function () {}
+			};
+			function ParentThing () {}
+			ParentThing.prototype = proto;
+			var child = new ParentThing();
+			// IE 6-8 clobber the constructor property if you assign
+			// a prototype to the constructor so we have to fix it manually.
+			// TODO: this sucks. fix it somehow????
+			child.constructor = ParentThing;
 			return Object.getPrototypeOf(child) == proto;
 		});
 
@@ -220,9 +227,11 @@ curl(['test/testutils', 'poly/object', 'domReady!'], function (tester) {
 				while (result && names.length) {
 					key = names.pop();
 					result = child.hasOwnProperty(key);
+					if (!result) return key; // show which name failed
 				}
+				return result;
 			}
-			return result;
+			else return names.toString();
 		});
 
 		// test defineProperty and defineProperties

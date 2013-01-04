@@ -88,6 +88,31 @@ or incomplete shims to fail silently.  poly/all works the same way.  However,
 poly/strict sets `failIfShimmed` so that poly/object will throw
 exceptions for some functions.  (see below)
 
+Object.getPrototypeOf works in all situations except when using raw
+prototypal inheritance in IE6-8.  This is due to a well-known IE bug that
+clobbers the constructor property on objects whose constructor has a prototype.
+
+By "raw", we mean the following:
+
+```js
+function MyClass () {}
+MyClass.prototype = { foo: 42 };
+var obj = new MyClass();
+console.log(obj.constructor == MyClass); // false in IE6-8
+```
+
+The workaround is to set the constructor explicitly:
+
+```js
+function MyClass () {}
+MyClass.prototype = { foo: 42, constructor: MyClass };
+var obj = new MyClass();
+console.log(obj.constructor == MyClass); // true everywhere!!!!!
+```
+
+Most inheritance helper libs, including John Resig's Simple Inheritance, dojo,
+and prototype.js already do this for you.
+
 poly/string:
 ---
 

@@ -53,7 +53,6 @@
  * https://github.com/kangax/protolicious/blob/master/experimental/object.for_in.js
  *
  * TODO: fix Object#propertyIsEnumerable for IE's non-enumerable props to match Object.keys()
- * TODO: somehow fix Object.getOwnPropertyNames since it doesn't return non-enumerables
  */
 define(['./lib/_base'], function (base) {
 "use strict";
@@ -68,7 +67,7 @@ define(['./lib/_base'], function (base) {
 		shims,
 		secrets,
 		protoSecretProp,
-		hop = 'hasOwnProperty',
+		hasOwnProp = 'hasOwnProperty',
 		undef;
 
 	refObj = Object;
@@ -81,11 +80,15 @@ define(['./lib/_base'], function (base) {
 		return true;
 	}());
 
+	// TODO: this still doesn't work for IE6-8 since object.constructor && object.constructor.prototype are clobbered/replaced when using `new` on a constructor that has a prototype. srsly.
+	// devs will have to do the following if they want this to work in IE6-8:
+	// Ctor.prototype.constructor = Ctor
 	getPrototypeOf = has__proto__
-		? function (object) { return object.__proto__; }
+		? function (object) { assertIsObject(object); return object.__proto__; }
 		: function (object) {
-			return protoSecretProp
-				? this[protoSecretProp](secrets.proto)
+			assertIsObject(object);
+			return protoSecretProp && object[protoSecretProp](secrets)
+				? object[protoSecretProp](secrets.proto)
 				: object.constructor ? object.constructor.prototype : refProto;
 		};
 
@@ -99,7 +102,7 @@ define(['./lib/_base'], function (base) {
 				}
 				return result;
 			}
-		}([ 'constructor', 'hasOwnProperty', 'isPrototypeOf', 'propertyIsEnumerable', 'toString', 'toLocaleString', 'valueOf' ]));
+		}([ 'constructor', hasOwnProp, 'isPrototypeOf', 'propertyIsEnumerable', 'toString', 'toLocaleString', 'valueOf' ]));
 
 	featureMap = {
 		'object-create': 'create',
@@ -123,7 +126,7 @@ define(['./lib/_base'], function (base) {
 		proto: {}
 	};
 
-	protoSecretProp = !has('object-getprototypeof') && !has__proto__ && hasNonEnumerableProps && 'hasOwnProperty';
+	protoSecretProp = !has('object-getprototypeof') && !has__proto__ && hasNonEnumerableProps && hasOwnProp;
 
 	function createFlameThrower (feature) {
 		return function () {
@@ -153,12 +156,14 @@ define(['./lib/_base'], function (base) {
 		return result;
 	}
 
-	if (hasNonEnumerableProps) (function (_hop) {
-		refProto[hop] = function (name) {
-			if (name == hop) return false;
+	// we might create an owned property to hold the secrets, but make it look
+	// like it's not an owned property.  (affects getOwnPropertyNames, too)
+	if (protoSecretProp) (function (_hop) {
+		refProto[hasOwnProp] = function (name) {
+			if (name == protoSecretProp) return false;
 			return _hop.call(this, name);
 		};
-	}(refProto[hop]));
+	}(refProto[hasOwnProp]));
 
 	if (!has('object-create')) {
 		Object.create = shims.create = function create (proto, props) {
@@ -174,6 +179,7 @@ define(['./lib/_base'], function (base) {
 			if (protoSecretProp) {
 				var orig = obj[protoSecretProp];
 				obj[protoSecretProp] = function (name) {
+					if (name == secrets) return true; // yes, we're using secrets
 					if (name == secrets.proto) return proto;
 					return orig.call(this, name);
 				};
@@ -299,8 +305,7 @@ define(['./lib/_base'], function (base) {
 		}
 	}
 
-	// this is effectively a no-op, so why execute it?
-	//failIfShimmed(false);
+	function assertIsObject (o) { if (typeof o != 'object') throw new TypeError('Object.getPrototypeOf called on non-object'); }
 
 	return {
 		failIfShimmed: failIfShimmed
