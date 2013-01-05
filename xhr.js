@@ -15,25 +15,25 @@ define(function () {
 
 	// find XHR implementation
 	if (typeof XMLHttpRequest == 'undefined') {
-		// keep trying progIds until we find the correct one, then rewrite the
-		// window.XMLHttpRequest function to always return that one.
-
-		progIds = ['Msxml2.XMLHTTP', 'Microsoft.XMLHTTP', 'Msxml2.XMLHTTP.4.0'];
-
+		// create xhr impl that will fail if called.
 		assignCtor(function () { throw new Error("poly/xhr: XMLHttpRequest not available"); });
-
-		while (progIds.length) (function (progId) {
-			try {
-				new ActiveXObject(progId);
-				assignCtor(function () { return new ActiveXObject(progId); });
-				break;
-			}
-			catch (ex) {}
-		})(progIds.shift());
+		// keep trying progIds until we find the correct one,
+		progIds = ['Msxml2.XMLHTTP', 'Microsoft.XMLHTTP', 'Msxml2.XMLHTTP.4.0'];
+		while (progIds.length && tryProgId(progIds.shift())) {}
 	}
 
 	function assignCtor (ctor) {
+		// assign window.XMLHttpRequest function
 		window.XMLHttpRequest = ctor;
+	}
+
+	function tryProgId (progId) {
+		try {
+			new ActiveXObject(progId);
+			assignCtor(function () { return new ActiveXObject(progId); });
+			return true;
+		}
+		catch (ex) {}
 	}
 
 });
