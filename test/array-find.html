@@ -113,7 +113,7 @@ curl(['poly/array-find', 'domReady!'], function () {
 		return item === 5;
 	});
 
-	tester.assertEquals('returns the first element the predicate deems true', result, 5);
+	tester.assertEquals('returns the first element the predicate deems true', result, a[4]);
 }).next(['test/testutils'], function (tester) {
 	var a, result;
 
@@ -122,7 +122,7 @@ curl(['poly/array-find', 'domReady!'], function () {
 		return item === this.value;
 	}, { value: 5 });
 
-	tester.assertEquals('returns the first element the predicate with a context deems true', result, 5);
+	tester.assertEquals('returns the first element the predicate with a context deems true', result, a[4]);
 });
 
 </script>
