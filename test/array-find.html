@@ -1,0 +1,137 @@
+<!DOCTYPE HTML>
+<html lang="en">
+
+<head>
+<title>array-find tests</title>
+
+<script>
+
+    curl = {
+		baseUrl: '../',
+		paths: {
+			curl: 'test/curl'
+		},
+		packages: [
+			{ name: 'poly', location: '.', main: 'poly' }
+		]
+	};
+
+</script>
+
+<script src="curl.js"></script>
+
+<script>
+
+curl(['poly/array-find', 'domReady!'], function () {
+}).next(['test/testutils'], function (tester) {
+	var functionLength = [].findIndex.length;
+
+	tester.assertEquals('the length property of findIndex is 1', functionLength, 1);
+}).next(['test/testutils'], function (tester) {
+	var result = [].findIndex(function (e) {
+		return true;	// doesn't really matter
+	});
+
+	tester.assertEquals('if length is 0, return -1', result, -1)
+}).next(['test/testutils'], function (tester) {
+	var a, isTypeError;
+
+	a = ['not empty'];
+	isTypeError = false;
+
+	try {
+		a.findIndex();
+	}
+	catch (e) {
+		isTypeError = e instanceof TypeError;
+	}
+	tester.assertTrue('throw TypeError exception if predicate is not callable', isTypeError);
+}).next(['test/testutils'], function (tester) {
+	var a, result;
+
+	a = [1, 2, 3, 4, 6];
+	result = a.findIndex(function (item, i, arr) {
+		return item === 5;
+	});
+
+	tester.assertEquals('when no result is found return -1', result, -1);
+}).next(['test/testutils'], function (tester) {
+	var a, result;
+
+	a = [1, 2, 3, 4, 5, 6, 5, 4, 3, 2, 1];
+	result = a.findIndex(function (item, i, arr) {
+		return item === 5;
+	});
+
+	tester.assertEquals('returns the index of the first element the predicate deems true', result, 4);
+}).next(['test/testutils'], function (tester) {
+	var a, result;
+
+	a = [1, 2, 3, 4, 5, 6, 5, 4, 3, 2, 1];
+	result = a.findIndex(function (item, i, arr) {
+		return item === this.value;
+	}, { value: 5 });
+
+	tester.assertEquals('returns the index of the first element the predicate with a context deems true', result, 4);
+}).next(['test/testutils'], function (tester) {
+	var functionLength = [].find.length;
+
+	tester.assertEquals('the length property of find is 1', functionLength, 1);
+}).next(['test/testutils'], function (tester) {
+	var result = [].find(function (e) {
+		return true;	// doesn't really matter
+	});
+
+	tester.assertEquals('if length is 0, return undefined', result, undefined)
+}).next(['test/testutils'], function (tester) {
+	var a, isTypeError;
+
+	a = ['not empty'];
+	isTypeError = false;
+
+	try {
+		a.find();
+	}
+	catch (e) {
+		isTypeError = e instanceof TypeError;
+	}
+	tester.assertTrue('throw TypeError exception if predicate is not callable', isTypeError);
+}).next(['test/testutils'], function (tester) {
+	var a, result;
+
+	a = [1, 2, 3, 4, 6];
+	result = a.find(function (item, i, arr) {
+		return item === 5;
+	});
+
+	tester.assertEquals('when no result is found return undefined', result, undefined);
+}).next(['test/testutils'], function (tester) {
+	var a, result;
+
+	a = [1, 2, 3, 4, 5, 6, 5, 4, 3, 2, 1];
+	result = a.find(function (item, i, arr) {
+		return item === 5;
+	});
+
+	tester.assertEquals('returns the first element the predicate deems true', result, 5);
+}).next(['test/testutils'], function (tester) {
+	var a, result;
+
+	a = [1, 2, 3, 4, 5, 6, 5, 4, 3, 2, 1];
+	result = a.find(function (item, i, arr) {
+		return item === this.value;
+	}, { value: 5 });
+
+	tester.assertEquals('returns the first element the predicate with a context deems true', result, 5);
+});
+
+</script>
+
+</head>
+
+<body>
+
+<div id="output"></div>
+
+</body>
+</html>

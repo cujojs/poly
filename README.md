@@ -41,6 +41,12 @@ poly/array:
 * array.reduceRight
 * Array.isArray
 
+poly/array-find:
+---
+
+* array.find
+* array.findIndex
+
 poly/function:
 ---
 
