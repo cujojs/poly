@@ -67,16 +67,14 @@
 
  */
 
-define(['./lib/_base'], function (base) {
+define(['./lib/_base', './lib/_array'], function (base, array) {
 "use strict";
 
 	var proto = Array.prototype,
 		toString = {}.toString,
 		featureMap,
-		toObject,
 		_reduce,
-		_find,
-		undef;
+		_find;
 
 	featureMap = {
 		'array-foreach': 'forEach',
@@ -89,14 +87,6 @@ define(['./lib/_base'], function (base) {
 		'array-indexof': 'indexOf',
 		'array-lastindexof': 'lastIndexOf'
 	};
-
-	toObject = base.createCaster(Object, 'Array');
-
-	function toArrayLike (o) {
-		return (base.toString(o) == '[object String]')
-			? o.split('')
-			: toObject(o);
-	}
 
 	function isArray (o) {
 		return toString.call(o) == '[object Array]';
@@ -111,62 +101,26 @@ define(['./lib/_base'], function (base) {
 		return 1;
 	}
 
-	function returnValue (val) {
-		return val;
-	}
-
 	/***** iterators *****/
-
-	function _iterate (arr, lambda, continueFunc, context, start, inc) {
-
-		var alo, len, i, end;
-
-		alo = toArrayLike(arr);
-		len = alo.length >>> 0;
-
-		if (start === undef) start = 0;
-		if (!inc) inc = 1;
-		end = inc < 0 ? -1 : len;
-
-		if (!base.isFunction(lambda)) {
-			throw new TypeError(lambda + ' is not a function');
-		}
-		if (start == end) {
-			return false;
-		}
-		if ((start <= end) ^ (inc > 0)) {
-			throw new TypeError('Invalid length or starting index');
-		}
-
-		for (i = start; i != end; i = i + inc) {
-			if (i in alo) {
-				if (!continueFunc(lambda.call(context, alo[i], i, alo), i, alo[i])) {
-					return false;
-				}
-			}
-		}
-
-		return true;
-	}
 
 	if (!has('array-foreach')) {
 		proto.forEach = function forEach (lambda) {
 			// arguments[+1] is to fool google closure compiler into NOT adding a function argument!
-			_iterate(this, lambda, returnTruthy, arguments[+1]);
+			array.iterate(this, lambda, returnTruthy, arguments[+1]);
 		};
 	}
 
 	if (!has('array-every')) {
 		proto.every = function every (lambda) {
 			// arguments[+1] is to fool google closure compiler into NOT adding a function argument!
-			return _iterate(this, lambda, returnValue, arguments[+1]);
+			return array.iterate(this, lambda, array.returnValue, arguments[+1]);
 		};
 	}
 
 	if (!has('array-some')) {
 		proto.some = function some (lambda) {
 			// arguments[+1] is to fool google closure compiler into NOT adding a function argument!
-			return _iterate(this, lambda, function (val) { return !val; }, arguments[+1]);
+			return array.iterate(this, lambda, function (val) { return !val; }, arguments[+1]);
 		};
 	}
 
@@ -180,7 +134,7 @@ define(['./lib/_base'], function (base) {
 			result = new Array(arr.length);
 
 			// arguments[+1] is to fool google closure compiler into NOT adding a function argument!
-			_iterate(arr, lambda, function (val, i) { result[i] = val; return 1; }, arguments[+1]);
+			array.iterate(arr, lambda, function (val, i) { result[i] = val; return 1; }, arguments[+1]);
 
 			return result;
 		};
@@ -193,7 +147,7 @@ define(['./lib/_base'], function (base) {
 			arr = this;
 			result = [];
 
-			_iterate(arr, lambda, function (val, i, orig) {
+			array.iterate(arr, lambda, function (val, i, orig) {
 				// use a copy of the original value in case
 				// the lambda function changed it
 				if (val) {
@@ -213,12 +167,12 @@ define(['./lib/_base'], function (base) {
 		_reduce = function _reduce (reduceFunc, inc, initialValue, hasInitialValue) {
 			var reduced, startPos, initialValuePos;
 
-			startPos = initialValuePos = inc > 0 ? -1 : toArrayLike(this).length >>> 0;
+			startPos = initialValuePos = inc > 0 ? -1 : array.toArrayLike(this).length >>> 0;
 
 			// If no initialValue, use first item of array (we know length !== 0 here)
 			// and adjust i to start at second item
 			if (!hasInitialValue) {
-				_iterate(this, returnValue, function (val, i) {
+				array.iterate(this, array.returnValue, function (val, i) {
 					reduced = val;
 					initialValuePos = i;
 				}, null, startPos + inc, inc);
@@ -233,7 +187,7 @@ define(['./lib/_base'], function (base) {
 			}
 
 			// Do the actual reduce
-			_iterate(this, function (item, i, arr) {
+			array.iterate(this, function (item, i, arr) {
 				reduced = reduceFunc(reduced, item, i, arr);
 			}, returnTruthy, null, initialValuePos + inc, inc);
 
@@ -259,7 +213,7 @@ define(['./lib/_base'], function (base) {
 	if (!has('array-indexof') || !has('array-lastindexof')) {
 
 		_find = function _find (arr, item, from, forward) {
-			var len = toArrayLike(arr).length >>> 0, foundAt = -1;
+			var len = array.toArrayLike(arr).length >>> 0, foundAt = -1;
 
 			// convert to number, or default to start or end positions
 			from = isNaN(from) ? (forward ? 0 : len - 1) : Number(from);
@@ -268,7 +222,7 @@ define(['./lib/_base'], function (base) {
 				from = len + from - 1;
 			}
 
-			_iterate(arr, returnValue, function (val, i) {
+			array.iterate(arr, array.returnValue, function (val, i) {
 				if (val === item) {
 					foundAt = i;
 				}
