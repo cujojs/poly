@@ -176,6 +176,10 @@ curl(['test/testutils', 'poly/object', 'domReady!'], function (tester) {
 			return Object.getPrototypeOf(child) == proto;
 		});
 
+		tester.assertTrue('Object.getPrototypeOf should return null when the parameter is Object.prototype', function(){
+			return Object.getPrototypeOf(Object.prototype) === null;
+		});
+
 		// test keys
 		tester.assertTrue('Object.keys should loop through all keys and nothing but the keys', function () {
 			var test, ref, keys, result, key;
