@@ -69,7 +69,12 @@ define(['./lib/_base'], function (base) {
 
 	getPrototypeOf = typeof {}.__proto__ == 'object'
 		? function (object) { return object.__proto__; }
-		: function (object) { return object.constructor ? object.constructor.prototype : refProto; };
+		: function (object) { 
+			if (object == refProto) {
+				return null;
+			}
+			return object.constructor ? object.constructor.prototype : refProto; 
+		};
 
 	keys = !hasNonEnumerableProps
 		? _keys
