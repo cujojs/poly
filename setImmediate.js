@@ -11,13 +11,12 @@
  *      http://www.opensource.org/licenses/mit-license.php
  *
  */
+(function (global) {
 define(['./lib/_base'], function (base) {
 
-	var global,
-		testCache,
+	var testCache,
 		tasks;
 
-	global = this;
 	testCache = {};
 	tasks = (function () {
 		var nextHandle,
@@ -189,7 +188,7 @@ define(['./lib/_base'], function (base) {
 		postMessageIsAsynchronous = true;
 		oldOnMessage = g.onmessage;
 
-		if (!g.postMessage || g.importScripts) {
+		if (!g.postMessage) {
 			return false;
 		}
 
@@ -206,24 +205,21 @@ define(['./lib/_base'], function (base) {
 	});
 
 	if (!has('setimmediate')) {
-		var attachTo = typeof Object.getPrototypeOf === 'function' && 'setTimeout' in Object.getPrototypeOf(global) ?
-				  Object.getPrototypeOf(global)
-				: global;
-
 		if (has('ms-setimmediate')) {
-			aliasMicrosoftImplementation(attachTo);
+			aliasMicrosoftImplementation(global);
 		}
 		else {
 			if (has('post-message')) {
-				installPostMessageImplementation(attachTo);
+				installPostMessageImplementation(global);
 			}
 			else if (has('script-onreadystatechange')) {
-				installReadyStateChangeImplementation(attachTo);
+				installReadyStateChangeImplementation(global);
 			}
 			else {
-				 installSetTimeoutImplementation(attachTo);
+				 installSetTimeoutImplementation(global);
 			}
-			attachTo.clearImmediate = tasks.remove;
+			global.clearImmediate = tasks.remove;
 		}
 	}
 });
+}(this.global || this));
