@@ -124,12 +124,7 @@ define(['./lib/_base'], function (base) {
 				tasks.runIfPresent(handle);
 			}
 		}
-		if (global.addEventListener) {
-			global.addEventListener('message', onGlobalMessage, false);
-		}
-		else {
-			global.attachEvent('onmessage', onGlobalMessage);
-		}
+		global.addEventListener('message', onGlobalMessage, false);
 
 		attachTo.setImmediate = function () {
 			var handle = tasks.addFromSetImmediateArguments(arguments);
