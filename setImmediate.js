@@ -172,11 +172,11 @@ define(['./lib/_base'], function (base) {
 	}
 
 	add('setimmediate', function (g) {
-		return !!g.setImmediate;
+		return base.isFunction(g.setImmediate);
 	});
 
 	add('ms-setimmediate', function (g) {
-		return !!(g.msSetImmediate && g.msClearImmediate);
+		return base.isFunction(g.msSetImmediate);
 	});
 
 	add('post-message', function (g) {
