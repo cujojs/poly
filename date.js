@@ -3,7 +3,7 @@
 
 	ES5-ish Date shims for older browsers.
 
-	(c) copyright 2011-2012 Brian Cavalier and John Hann
+	(c) copyright 2011-2013 Brian Cavalier and John Hann
 
 	This module is part of the cujo.js family of libraries (http://cujojs.com/).
 
