@@ -57,6 +57,9 @@ poly/setImmediate:
 * (global) setImmediate
 * (global) clearImmediate
 
+Note: setImmediate is not expected to become standardized, but is included
+here as an interim solution as a performant next-turn implementation.
+
 poly/object:
 ---
 
