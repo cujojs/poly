@@ -172,15 +172,17 @@ define(['./lib/_base'], function (base) {
 		};
 	}
 
-	add('set-immediate', function (g) {
+	add('setimmediate', function (g) {
 		return !!g.setImmediate;
 	});
 
-	add('microsoft-implementation', function (g) {
+	add('ms-setimmediate', function (g) {
 		return !!(g.msSetImmediate && g.msClearImmediate);
 	});
 
-	add('asynchronous-post-message', function (g) {
+	add('post-message', function (g) {
+		// Note: this is only for the async postMessage, not the buggy sync
+		// version in IE8
 		var postMessageIsAsynchronous,
 			oldOnMessage;
 
@@ -199,23 +201,23 @@ define(['./lib/_base'], function (base) {
 		return postMessageIsAsynchronous;
 	});
 
-	add('ready-state-change', function (g) {
+	add('script-onreadystatechange', function (g) {
 		return 'document' in g && 'onreadystatechange' in g.document.createElement('script');
 	});
 
-	if (!has('set-immediate')) {
+	if (!has('setimmediate')) {
 		var attachTo = typeof Object.getPrototypeOf === 'function' && 'setTimeout' in Object.getPrototypeOf(global) ?
 				  Object.getPrototypeOf(global)
 				: global;
 
-		if (has('microsft-implementation')) {
+		if (has('ms-setimmediate')) {
 			aliasMicrosoftImplementation(attachTo);
 		}
 		else {
-			if (has('asynchronous-post-message')) {
+			if (has('post-message')) {
 				installPostMessageImplementation(attachTo);
 			}
-			else if (has('ready-state-change')) {
+			else if (has('script-onreadystatechange')) {
 				installReadyStateChangeImplementation(attachTo);
 			}
 			else {
