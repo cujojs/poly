@@ -26,14 +26,14 @@ Discussion: https://groups.google.com/d/forum/cujojs
 What's new
 ---
 
-* 0.9.2
-	* setImmediate/clearImmediate as a temporary, non-standard method for
-	  performant task queueing.
+* 0.5.2
+	* Implement setImmediate/clearImmediate as a temporary, non-standard method
+	  for performant task queueing.
 	* New poly/es5 and poly/es5-strict modules. poly/strict is deprecated.
 	* Use @kitcambridge's JSON3 instead of JSON2
 	* Date shim now keeps properties on Date constructor and keeps the name
 	  of the constructor "Date" (was previously "_Date")
-	* Fixes to Object shims in IE 6-8.
+	* Fix bugs in Object shims in IE 6-8.
 
 Features
 ---
