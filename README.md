@@ -1,7 +1,6 @@
 Code to modern standards. Run everywhere.
 =========
 
-version: 0.5.1
 License: MIT
 
 poly.js is the a collection of AMD modules that shim (aka "polyfill")
@@ -23,8 +22,21 @@ Issues: https://github.com/cujojs/poly/issues
 
 Discussion: https://groups.google.com/d/forum/cujojs
 
+
+What's new
+---
+
+* 0.5.2
+	* Implement setImmediate/clearImmediate as a temporary, non-standard method
+	  for performant task queueing.
+	* New poly/es5 and poly/es5-strict modules. poly/strict is deprecated.
+	* Use @kitcambridge's JSON3 instead of JSON2
+	* Date shim now keeps properties on Date constructor and keeps the name
+	  of the constructor "Date" (was previously "_Date")
+	* Fix bugs in Object shims in IE 6-8.
+
 Features
-----
+---
 
 poly augments browsers with all of the following features:
 
@@ -62,6 +74,9 @@ poly/setImmediate:
 
 * (global) setImmediate
 * (global) clearImmediate
+
+Note: setImmediate is not expected to become standardized, but is included
+here as an interim solution as a performant next-turn implementation.
 
 poly/object:
 ---

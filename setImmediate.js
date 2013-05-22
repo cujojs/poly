@@ -1,7 +1,7 @@
 /**
  * setImmediate polyfill / shim
  *
- * (c) copyright 2011-2012 Brian Cavalier and John Hann
+ * (c) copyright 2011-2013 Brian Cavalier and John Hann
  *
  * poly is part of the cujo.js family of libraries (http://cujojs.com/)
  *
@@ -11,13 +11,12 @@
  *      http://www.opensource.org/licenses/mit-license.php
  *
  */
+(function (global) {
 define(['./lib/_base'], function (base) {
 
-	var global,
-		testCache,
+	var testCache,
 		tasks;
 
-	global = this;
 	testCache = {};
 	tasks = (function () {
 		var nextHandle,
@@ -110,7 +109,7 @@ define(['./lib/_base'], function (base) {
 		// * https://developer.mozilla.org/en/DOM/window.postMessage
 		// * http://www.whatwg.org/specs/web-apps/current-work/multipage/comms.html#crossDocumentMessages
 
-		var MESSAGE_PREFIX = 'com.bn.NobleJS.setImmediate' + Math.random();
+		var MESSAGE_PREFIX = 'cujojs/poly.setImmediate' + Math.random();
 
 		function isStringAndStartsWith (string, putativeStart) {
 			return typeof string === 'string' && string.substring(0, putativeStart.length) === putativeStart;
@@ -125,12 +124,7 @@ define(['./lib/_base'], function (base) {
 				tasks.runIfPresent(handle);
 			}
 		}
-		if (global.addEventListener) {
-			global.addEventListener('message', onGlobalMessage, false);
-		}
-		else {
-			global.attachEvent('onmessage', onGlobalMessage);
-		}
+		global.addEventListener('message', onGlobalMessage, false);
 
 		attachTo.setImmediate = function () {
 			var handle = tasks.addFromSetImmediateArguments(arguments);
@@ -172,22 +166,24 @@ define(['./lib/_base'], function (base) {
 		};
 	}
 
-	add('set-immediate', function (g) {
-		return !!g.setImmediate;
+	add('setimmediate', function (g) {
+		return base.isFunction(g.setImmediate);
 	});
 
-	add('microsoft-implementation', function (g) {
-		return !!(g.msSetImmediate && g.msClearImmediate);
+	add('ms-setimmediate', function (g) {
+		return base.isFunction(g.msSetImmediate);
 	});
 
-	add('asynchronous-post-message', function (g) {
+	add('post-message', function (g) {
+		// Note: this is only for the async postMessage, not the buggy sync
+		// version in IE8
 		var postMessageIsAsynchronous,
 			oldOnMessage;
 
 		postMessageIsAsynchronous = true;
 		oldOnMessage = g.onmessage;
 
-		if (!g.postMessage || g.importScripts) {
+		if (!g.postMessage) {
 			return false;
 		}
 
@@ -199,29 +195,26 @@ define(['./lib/_base'], function (base) {
 		return postMessageIsAsynchronous;
 	});
 
-	add('ready-state-change', function (g) {
+	add('script-onreadystatechange', function (g) {
 		return 'document' in g && 'onreadystatechange' in g.document.createElement('script');
 	});
 
-	if (!has('set-immediate')) {
-		var attachTo = typeof Object.getPrototypeOf === 'function' && 'setTimeout' in Object.getPrototypeOf(global) ?
-				  Object.getPrototypeOf(global)
-				: global;
-
-		if (has('microsft-implementation')) {
-			aliasMicrosoftImplementation(attachTo);
+	if (!has('setimmediate')) {
+		if (has('ms-setimmediate')) {
+			aliasMicrosoftImplementation(global);
 		}
 		else {
-			if (has('asynchronous-post-message')) {
-				installPostMessageImplementation(attachTo);
+			if (has('post-message')) {
+				installPostMessageImplementation(global);
 			}
-			else if (has('ready-state-change')) {
-				installReadyStateChangeImplementation(attachTo);
+			else if (has('script-onreadystatechange')) {
+				installReadyStateChangeImplementation(global);
 			}
 			else {
-				 installSetTimeoutImplementation(attachTo);
+				 installSetTimeoutImplementation(global);
 			}
-			attachTo.clearImmediate = tasks.remove;
+			global.clearImmediate = tasks.remove;
 		}
 	}
 });
+}(this.global || this));

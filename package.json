@@ -1,6 +1,6 @@
 {
     "name": "poly",
-    "version": "0.5.1",
+    "version": "0.5.2",
     "description": "poly.js is the a collection of AMD modules that shim (aka \"polyfill\") old browsers to support modern (aka \"ES5-ish\") javascript.",
     "keywords": ["poly", "cujo", "es5", "shim", "array", "object", "string", "function", "xhr", "json"],
     "licenses": [
