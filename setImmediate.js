@@ -109,7 +109,7 @@ define(['./lib/_base'], function (base) {
 		// * https://developer.mozilla.org/en/DOM/window.postMessage
 		// * http://www.whatwg.org/specs/web-apps/current-work/multipage/comms.html#crossDocumentMessages
 
-		var MESSAGE_PREFIX = 'com.bn.NobleJS.setImmediate' + Math.random();
+		var MESSAGE_PREFIX = 'cujojs/poly.setImmediate' + Math.random();
 
 		function isStringAndStartsWith (string, putativeStart) {
 			return typeof string === 'string' && string.substring(0, putativeStart.length) === putativeStart;
