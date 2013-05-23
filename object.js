@@ -87,6 +87,11 @@ define(['./lib/_base'], function (base) {
 		? function (object) { assertIsObject(object); return object.__proto__; }
 		: function (object) {
 			assertIsObject(object);
+			// return null according to the investigation result at: 
+			// https://github.com/cujojs/poly/pull/21
+			if (object == refProto) {
+				return null;
+			}
 			return protoSecretProp && object[protoSecretProp](secrets)
 				? object[protoSecretProp](secrets.proto)
 				: object.constructor ? object.constructor.prototype : refProto;
