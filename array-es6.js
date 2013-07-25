@@ -1,6 +1,16 @@
-// https://gist.github.com/rwldrn/5079436
-// https://gist.github.com/rwldrn/5079427
-// https://gist.github.com/rwldrn/1074126
+/** @license MIT License (c) copyright 2013 original authors */
+/**
+ * Array -- a stand-alone module for using ES6 array features.
+ *
+ * @author Jared Cacurak
+ * @author Brian Cavalier
+ * @author John Hann
+ *
+ * Huge thanks to Rick Waldron:
+ * https://gist.github.com/rwldrn/5079436
+ * https://gist.github.com/rwldrn/5079427
+ * https://gist.github.com/rwldrn/1074126
+ */
 define(['./lib/_base', './lib/_array'], function (base, array) {
 "use strict";
 

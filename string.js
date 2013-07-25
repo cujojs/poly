@@ -1,12 +1,9 @@
+/** @license MIT License (c) copyright 2013 original authors */
 /**
  * String polyfill / shims
  *
- * (c) copyright 2011-2013 Brian Cavalier and John Hann
- *
- * This module is part of the cujo.js family of libraries (http://cujojs.com/).
- *
- * Licensed under the MIT License at:
- * 		http://www.opensource.org/licenses/mit-license.php
+ * @author Brian Cavalier
+ * @author John Hann
  *
  * Adds str.trim(), str.trimRight(), and str.trimLeft()
  *

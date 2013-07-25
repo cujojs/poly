@@ -1,48 +1,14 @@
+/** @license MIT License (c) copyright 2013 original authors */
+/**
+ * Array -- a stand-alone module for using Javascript 1.6 array features
+ * in lame-o browsers that don't support Javascript 1.6
+ *
+ * @author Jared Cacurak
+ * @author Brian Cavalier
+ * @author John Hann
+ */
 /*
-	Array -- a stand-alone module for using Javascript 1.6 array features
-	in lame-o browsers that don't support Javascript 1.6
-
-	(c) copyright 2011-2013 Brian Cavalier and John Hann
-
-	This module is part of the cujo.js family of libraries (http://cujojs.com/).
-
-	Licensed under the MIT License at:
-		http://www.opensource.org/licenses/mit-license.php
-*/
-/*
-	This module is under 1kB when compiled/gzipped and is compatible with
-	has() pre-processors (<400 bytes when compiled for modern browsers).
-
-	wrapper API:
-
-	This module will wrap native methods to normalize array calls to
-	be unified across js engines that support the array methods
-	natively with those that don't:
-
-	define(['poly/lib/shim/array'], function (array) {
-		var items = [1, 2, 3];
-		array.forEach(items, function (item) {
-			console.log(item);
-		};
-	});
-
-	forEach(array, lambda [, context]);
-	every(array, lambda [, context]);
-	some(array, lambda [, context]);
-	filter(array, lambda [, context]);
-	map(array, lambda [, context]);
-	indexOf(arr, item [, fromIndex]);
-	lastIndexOf(arr, item [, fromIndex]);
-	reduce(arr, reduceFunc [, initialValue]);
-	reduceRight(arr, reduceFunc [, initialValue]);
-	isArray(object)
-
-	polyfill API:
-
-	You may also use this module to augment the Array.prototype of
-	older js engines by loading it via the poly! plugin prefix:
-
-	define(['poly!poly/lib/shim/array'], function () {
+	define(['poly!poly/array'], function () {
 		var items = [1, 2, 3];
 		items.forEach(function (item) {
 			console.log(item);

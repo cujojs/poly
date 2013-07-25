@@ -1,13 +1,10 @@
-/*
-	poly/strict
-
-	(c) copyright 2011-2013 Brian Cavalier and John Hann
-
-	This module is part of the cujo.js family of libraries (http://cujojs.com/).
-
-	Licensed under the MIT License at:
-		http://www.opensource.org/licenses/mit-license.php
-*/
+/** @license MIT License (c) copyright 2013 original authors */
+/**
+ * stricter ES5 polyfills / shims for AMD loaders
+ *
+ * @author Brian Cavalier
+ * @author John Hann
+ */
 define(['./object', './string', './date', './array', './function', './json', './xhr'], function (object, string, date) {
 
 	var failTestRx;

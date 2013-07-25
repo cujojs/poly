@@ -1,12 +1,9 @@
+/** @license MIT License (c) copyright 2013 original authors */
 /**
  * Object polyfill / shims
  *
- * (c) copyright 2011-2013 Brian Cavalier and John Hann
- *
- * This module is part of the cujo.js family of libraries (http://cujojs.com/).
- *
- * Licensed under the MIT License at:
- * 		http://www.opensource.org/licenses/mit-license.php
+ * @author Brian Cavalier
+ * @author John Hann
  */
 /**
  * The goal of these shims is to emulate a JavaScript 1.8.5+ environments as
@@ -87,7 +84,7 @@ define(['./lib/_base'], function (base) {
 		? function (object) { assertIsObject(object); return object.__proto__; }
 		: function (object) {
 			assertIsObject(object);
-			// return null according to the investigation result at: 
+			// return null according to the investigation result at:
 			// https://github.com/cujojs/poly/pull/21
 			if (object == refProto) {
 				return null;
