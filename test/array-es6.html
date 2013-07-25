@@ -23,17 +23,51 @@
 <script>
 
 curl(['poly/array-es6', 'domReady!'], function () {
-}).next(['test/testutils'], function (tester) {
+}).next(['test/testutils'], runTests);
+
+function runTests (tester) {
+
+	/***** Array.from and Array.of *****/
+
+	// basics
+	tester.assertTrue('Array.from exists', typeof Array.from == 'function');
+	tester.assertTrue('Array.of exists', typeof Array.of == 'function');
+	tester.assertEquals('the length property of Array.from is 1', Array.from.length, 1);
+	tester.assertEquals('the length property of Array.from is 0', Array.of.length, 0);
+
+	// happy path
+	tester.assertTrue('Array.of(...tihngs) should return [...things]', arraysLookIdentical(Array.of(1, 2, 3, 'four'), [1, 2, 3, 'four']));
+
+	var nodes = document.all ? document.all() : document.querySelectorAll('html *');
+	var a = [1, 2, 3, 4, 5, 6, 7, 8, 9];
+	var args = asArguments.apply(null, a);
+	tester.assertTrue('Array.from(nodelist)', arraysLookIdentical(Array.from(nodes), nodes));
+	tester.assertTrue('Array.from(arguments)', arraysLookIdentical(Array.from(args), a));
+
+	// edges
+	tester.assertTrue('Array.from(<number>) is empty array', arraysLookIdentical(Array.from(5), []));
+	tester.assertTrue('Array.from(<non-array-like>) is empty array', arraysLookIdentical(Array.from({}), []));
+
+	var a = [undefined, 1, 2, undefined];
+	tester.assertTrue('Array.from(<array-like-with-missing-items>) should have undefined placeholders', arraysLookIdentical(Array.from(a), a));
+
+	tester.assertTrue('Array.of(<number>) should return [<number>]', arraysLookIdentical(Array.of(4), [4]));
+	tester.assertTrue('Array.of(<array>) should return [<array>]', arraysLookIdentical(Array.of(a), [a]));
+
+
+
+	/***** find and findIndex *****/
+
 	var functionLength = [].findIndex.length;
 
 	tester.assertEquals('the length property of findIndex is 1', functionLength, 1);
-}).next(['test/testutils'], function (tester) {
+
 	var result = [].findIndex(function (e) {
 		return true;	// doesn't really matter
 	});
 
 	tester.assertEquals('if length is 0, return -1', result, -1)
-}).next(['test/testutils'], function (tester) {
+
 	var a, isTypeError;
 
 	a = ['not empty'];
@@ -46,7 +80,7 @@ curl(['poly/array-es6', 'domReady!'], function () {
 		isTypeError = e instanceof TypeError;
 	}
 	tester.assertTrue('throw TypeError exception if predicate is not callable', isTypeError);
-}).next(['test/testutils'], function (tester) {
+
 	var a, result;
 
 	a = [1, 2, 3, 4, 6];
@@ -55,7 +89,7 @@ curl(['poly/array-es6', 'domReady!'], function () {
 	});
 
 	tester.assertEquals('when no result is found return -1', result, -1);
-}).next(['test/testutils'], function (tester) {
+
 	var a, result;
 
 	a = [1, 2, 3, 4, 5, 6, 5, 4, 3, 2, 1];
@@ -64,7 +98,7 @@ curl(['poly/array-es6', 'domReady!'], function () {
 	});
 
 	tester.assertEquals('returns the index of the first element the predicate deems true', result, 4);
-}).next(['test/testutils'], function (tester) {
+
 	var a, result;
 
 	a = [1, 2, 3, 4, 5, 6, 5, 4, 3, 2, 1];
@@ -73,17 +107,17 @@ curl(['poly/array-es6', 'domReady!'], function () {
 	}, { value: 5 });
 
 	tester.assertEquals('returns the index of the first element the predicate with a context deems true', result, 4);
-}).next(['test/testutils'], function (tester) {
+
 	var functionLength = [].find.length;
 
 	tester.assertEquals('the length property of find is 1', functionLength, 1);
-}).next(['test/testutils'], function (tester) {
+
 	var result = [].find(function (e) {
 		return true;	// doesn't really matter
 	});
 
 	tester.assertEquals('if length is 0, return undefined', result, undefined)
-}).next(['test/testutils'], function (tester) {
+
 	var a, isTypeError;
 
 	a = ['not empty'];
@@ -96,7 +130,7 @@ curl(['poly/array-es6', 'domReady!'], function () {
 		isTypeError = e instanceof TypeError;
 	}
 	tester.assertTrue('throw TypeError exception if predicate is not callable', isTypeError);
-}).next(['test/testutils'], function (tester) {
+
 	var a, result;
 
 	a = [1, 2, 3, 4, 6];
@@ -105,7 +139,7 @@ curl(['poly/array-es6', 'domReady!'], function () {
 	});
 
 	tester.assertEquals('when no result is found return undefined', result, undefined);
-}).next(['test/testutils'], function (tester) {
+
 	var a, result;
 
 	a = [1, 2, 3, 4, 5, 6, 5, 4, 3, 2, 1];
@@ -114,7 +148,7 @@ curl(['poly/array-es6', 'domReady!'], function () {
 	});
 
 	tester.assertEquals('returns the first element the predicate deems true', result, a[4]);
-}).next(['test/testutils'], function (tester) {
+
 	var a, result;
 
 	a = [1, 2, 3, 4, 5, 6, 5, 4, 3, 2, 1];
@@ -123,7 +157,19 @@ curl(['poly/array-es6', 'domReady!'], function () {
 	}, { value: 5 });
 
 	tester.assertEquals('returns the first element the predicate with a context deems true', result, a[4]);
-});
+}
+
+function arraysLookIdentical (a, b) {
+	if (a.length != b.length) return false;
+	for (var i = 0; i < a.length; i++) {
+		if (a[i] !== b[i]) return false;
+	}
+	return true;
+}
+
+function asArguments () {
+	return arguments;
+}
 
 </script>
 
