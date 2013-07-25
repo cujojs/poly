@@ -9,7 +9,7 @@
  * 		http://www.opensource.org/licenses/mit-license.php
  */
 
-define(['./object', './string', './date', './array', './function', './json', './xhr', './setImmediate', './array-find'], function (object, string, date) {
+define(['./object', './string', './date', './array', './function', './json', './xhr', './setImmediate', './array-es6'], function (object, string, date) {
 
 	return {
 		failIfShimmed: object.failIfShimmed,
