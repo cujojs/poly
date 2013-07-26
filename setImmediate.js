@@ -8,8 +8,11 @@
  *
  * Based on NobleJS's setImmediate. (https://github.com/NobleJS/setImmediate)
  */
-(function (global) {
-define(['./lib/_base'], function (base) {
+(function (global, define) {
+define(function (require) {
+"use strict";
+
+	var base = require('./lib/_base');
 
 	var testCache,
 		tasks;
@@ -214,4 +217,9 @@ define(['./lib/_base'], function (base) {
 		}
 	}
 });
-}(this.global || this));
+}(
+	this.global || this,
+	typeof define == 'function' && define.amd
+		? define
+		: function (factory) { module.exports = factory(require); }
+));

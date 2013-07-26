@@ -13,8 +13,11 @@
  * from http://perfectionkills.com/whitespace-deviations/
  * '\x09-\x0D\x20\xA0\u1680\u180E\u2000-\u200A\u202F\u205F\u3000\u2028\u2029'
  */
-define (['./lib/_base'], function (base) {
-	"use strict";
+(function (define) {
+define(function (require) {
+"use strict";
+
+	var base = require('./lib/_base');
 
 	var proto = String.prototype,
 		featureMap,
@@ -82,3 +85,8 @@ define (['./lib/_base'], function (base) {
 	};
 
 });
+}(
+	typeof define == 'function' && define.amd
+		? define
+		: function (factory) { module.exports = factory(require); }
+));

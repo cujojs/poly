@@ -7,8 +7,10 @@
  *
  * ES5-ish Date shims for older browsers.
 */
-(function (origDate) {
-define(['./lib/_base'], function (base) {
+(function (origDate, define) {
+define(function (require) {
+
+	var base = require('./lib/_base');
 
 	var origProto,
 		origParse,
@@ -210,4 +212,9 @@ define(['./lib/_base'], function (base) {
 	};
 
 });
-}(Date));
+}(
+	Date,
+	typeof define == 'function' && define.amd
+		? define
+		: function (factory) { module.exports = factory(require); }
+));

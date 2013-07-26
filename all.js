@@ -5,8 +5,18 @@
  * @author Brian Cavalier
  * @author John Hann
  */
+(function (define) {
+define(function (require) {
 
-define(['./object', './string', './date', './array', './function', './json', './xhr', './setImmediate', './array-es6'], function (object, string, date) {
+	var object = require('./object');
+	var string = require('./string');
+	var date = require('./date');
+	require('./array');
+	require('./function');
+	require('./json');
+	require('./xhr');
+	require('./setImmediate');
+	require('./array-es6');
 
 	return {
 		failIfShimmed: object.failIfShimmed,
@@ -15,3 +25,8 @@ define(['./object', './string', './date', './array', './function', './json', './
 	};
 
 });
+}(
+	typeof define == 'function' && define.amd
+		? define
+		: function (factory) { module.exports = factory(require); }
+));

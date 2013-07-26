@@ -5,16 +5,22 @@
  * @author Brian Cavalier
  * @author John Hann
  */
+(function (define) {
+define(function (require) {
+"use strict";
 
-define(['./all'], function (all) {
+	var all = require('./all');
 
 	var poly = {};
 
 	// copy all
 	for (var p in all) poly[p] = all[p];
 
-	poly.version = '0.5.2';
-
 	return poly;
 
 });
+}(
+	typeof define == 'function' && define.amd
+		? define
+		: function (factory) { module.exports = factory(require); }
+));

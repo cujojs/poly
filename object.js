@@ -48,8 +48,11 @@
  *
  * TODO: fix Object#propertyIsEnumerable for IE's non-enumerable props to match Object.keys()
  */
-define(['./lib/_base'], function (base) {
-'use strict';
+(function (define) {
+define(function (require) {
+"use strict";
+
+	var base = require('./lib/_base');
 
 	var refObj,
 		refProto,
@@ -410,3 +413,8 @@ define(['./lib/_base'], function (base) {
 	};
 
 });
+}(
+	typeof define == 'function' && define.amd
+		? define
+		: function (factory) { module.exports = factory(require); }
+));

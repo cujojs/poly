@@ -11,8 +11,12 @@
  * https://gist.github.com/rwldrn/5079427
  * https://gist.github.com/rwldrn/1074126
  */
-define(['./lib/_base', './lib/_array'], function (base, array) {
+(function (define) {
+define(function (require) {
 "use strict";
+
+	var base = require('./lib/_base');
+	var array = require('./lib/_array');
 
 	var ctor = Array,
 		proto = ctor.prototype,
@@ -88,3 +92,8 @@ define(['./lib/_base', './lib/_array'], function (base, array) {
 		}
 	}
 });
+}(
+	typeof define == 'function' && define.amd
+		? define
+		: function (factory) { module.exports = factory(require); }
+));

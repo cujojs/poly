@@ -5,6 +5,13 @@
  * @author Brian Cavalier
  * @author John Hann
  */
-define(['./support/json3'], function (JSON) {
-	return JSON;
+(function (define) {
+define(function (require) {
+"use strict";
+	return require('./support/json3');
 });
+}(
+	typeof define == 'function' && define.amd
+		? define
+		: function (factory) { module.exports = factory(require); }
+));

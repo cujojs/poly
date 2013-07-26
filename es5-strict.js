@@ -5,7 +5,16 @@
  * @author Brian Cavalier
  * @author John Hann
  */
-define(['./object', './string', './date', './array', './function', './json', './xhr'], function (object, string, date) {
+(function (define) {
+define(function (require) {
+
+	var object = require('./object');
+	var string = require('./string');
+	var date = require('./date');
+	require('./array');
+	require('./function');
+	require('./json');
+	require('./xhr');
 
 	var failTestRx;
 
@@ -27,3 +36,8 @@ define(['./object', './string', './date', './array', './function', './json', './
 	};
 
 });
+}(
+	typeof define == 'function' && define.amd
+		? define
+		: function (factory) { module.exports = factory(require); }
+));

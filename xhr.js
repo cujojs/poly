@@ -5,7 +5,9 @@
  * @author Brian Cavalier
  * @author John Hann
  */
-define(function () {
+(function (global, define) {
+define(function (require) {
+"use strict";
 
 	var progIds;
 
@@ -19,8 +21,8 @@ define(function () {
 	}
 
 	function assignCtor (ctor) {
-		// assign window.XMLHttpRequest function
-		window.XMLHttpRequest = ctor;
+		// assign global.XMLHttpRequest function
+		global.XMLHttpRequest = ctor;
 	}
 
 	function tryProgId (progId) {
@@ -33,3 +35,9 @@ define(function () {
 	}
 
 });
+}(
+	typeof global != 'undefined' && global || this.global || this,
+	typeof define == 'function' && define.amd
+		? define
+		: function (factory) { module.exports = factory(require); }
+));
