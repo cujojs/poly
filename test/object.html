@@ -44,6 +44,18 @@ var natives = {
 	getOwnPropertyDescriptor: Object.getOwnPropertyDescriptor
 };
 
+</script>
+
+<!--[if IE 8]>
+<script>
+// It's ok if we override IE8's defineProperty and getOwnPropertyDescriptor
+delete natives.defineProperty;
+delete natives.getOwnPropertyDescriptor;
+</script>
+<![endif]-->
+
+<script>
+
 // First, test that poly/object doesn't clobber native methods
 curl(['test/testutils', 'poly/object', 'domReady!'], function (tester) {
 
