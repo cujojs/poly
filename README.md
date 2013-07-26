@@ -24,7 +24,7 @@ Discussion: https://groups.google.com/d/forum/cujojs
 Documentation:
 
 * ES5: http://es5.github.io/
-* ES6 (draft): http://people.mozilla.org/~jorendorff/es6-draft.html
+* ES6 (draft): http://wiki.ecmascript.org/doku.php?id=harmony:specification_drafts
 
 What's new
 ---
@@ -32,7 +32,8 @@ What's new
 * 0.6.0
 	* Converted all modules to UMD (experimental support for node.js!)
 	* ES6 Array.prototype.find() and Array.prototype.findIndex()
-	* ES6 Array.from() and Array.of()
+	* ES6 Array.from() (without recent mapping functionality)
+	* ES6 Array.of()
 	* Fix for edge case of Object.getPrototypeOf (thanks Norman Xu!)
 	* Allow prototype extension for DOM objects in IE8 (thanks Norman Xu and Mikael Karon!)
 * 0.5.2
@@ -67,7 +68,7 @@ poly/array-es6:
 
 * array.find
 * array.findIndex
-* Array.from (including generic behavior)
+* Array.from (including generic behavior, but without mapping feature)
 * Array.of
 
 poly/function:
