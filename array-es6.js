@@ -41,11 +41,21 @@ define(['./lib/_base', './lib/_array'], function (base, array) {
 	}
 
 	if (!has('array-from')) {
-		Array.from = function (o) { return slice.call(o); }
+		Array.from = function (thing) {
+			var ctor, k, o;
+			// sniff if we're being applied to some other constructor
+			ctor = base.isFunction(this) ? this : Array;
+			if (Array === ctor) return slice.call(thing);
+			k = thing.length;
+			o = new ctor(k);
+			o.length = k;
+			while (--k >= 0) o[k] = thing[k];
+			return o;
+		};
 	}
 
 	if (!has('array-of')) {
-		Array.of = function () { return slice.call(arguments); }
+		Array.of = function () { return slice.call(arguments); };
 	}
 
 	if (!has('array-findIndex') || !has('array-find')) {

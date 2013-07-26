@@ -54,7 +54,18 @@ function runTests (tester) {
 	tester.assertTrue('Array.of(<number>) should return [<number>]', arraysLookIdentical(Array.of(4), [4]));
 	tester.assertTrue('Array.of(<array>) should return [<array>]', arraysLookIdentical(Array.of(a), [a]));
 
+	// generic from()
+	tester.assertEquals(
+			'Array.from.call(ArrayLike, <arr>) converts to an array-like object',
+			Object.prototype.toString.call(Array.from.call(ArrayLike, [ 1, 2, 3 ])),
+			Object.prototype.toString.call(new ArrayLike())
+	);
+	tester.assertTrue(
+			'Array.from.call(ArrayLike, <arr>) copies all items',
+			arraysLookIdentical(Array.from.call(ArrayLike, [ 1, 2, 3 ]), [ 1, 2, 3 ])
+	);
 
+	function ArrayLike (len) {}
 
 	/***** find and findIndex *****/
 
