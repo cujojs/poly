@@ -37,7 +37,6 @@ define(['./lib/_base', './lib/_array'], function (base, array) {
 "use strict";
 
 	var proto = Array.prototype,
-		toString = {}.toString,
 		featureMap,
 		_reduce,
 		_find;
@@ -53,10 +52,6 @@ define(['./lib/_base', './lib/_array'], function (base, array) {
 		'array-indexof': 'indexOf',
 		'array-lastindexof': 'lastIndexOf'
 	};
-
-	function isArray (o) {
-		return toString.call(o) == '[object Array]';
-	}
 
 	function has (feature) {
 		var prop = featureMap[feature];
@@ -214,7 +209,7 @@ define(['./lib/_base', './lib/_array'], function (base, array) {
 	}
 
 	if (!Array.isArray) {
-		Array.isArray = isArray;
+		Array.isArray = base.isArray;
 	}
 
 });
