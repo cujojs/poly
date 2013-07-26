@@ -319,7 +319,7 @@ set of tests for a project that uses object, function, and string shims:
 
 ```js
 var preloads = [];
-if (typeof Object.preventExtensions == 'function') {
+if (typeof Object.preventExtensions != 'function') {
 	preloads.push('poly/object');
 }
 if (typeof Function.prototype.bind != 'function') {
