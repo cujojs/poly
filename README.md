@@ -223,7 +223,6 @@ Using poly's modules as shims / polyfills:
 
 ```js
 	// somewhere in your app's initialization code, load the "poly/array"
-	// and "poly/function" module
 	// and it will shim the native Array prototype
 	curl({ preloads: [ "poly/array" ] });
 
@@ -260,7 +259,7 @@ Using poly's modules as shims / polyfills:
 ```
 
 ```js
-	// use all shims in, but with stronger ES5 compliance
+	// use all shims, but with stronger ES5 compliance
 	curl({ preloads: [ "poly/strict" ] });
 ```
 
