@@ -26,6 +26,10 @@ Discussion: https://groups.google.com/d/forum/cujojs
 What's new
 ---
 
+* 0.6.0
+	* ES6 Array.prototype.find() and Array.prototype.findIndex()
+	* ES6 Array.from() and Array.of()
+	* Fix for edge case of Object.getPrototypeOf (thanks Norman Xu!)
 * 0.5.2
 	* Implement setImmediate/clearImmediate as a temporary, non-standard method
 	  for performant task queueing.
@@ -58,6 +62,8 @@ poly/array-es6:
 
 * array.find
 * array.findIndex
+* Array.from (including generic behavior)
+* Array.of
 
 poly/function:
 ---
