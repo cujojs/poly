@@ -225,8 +225,8 @@ define(function (require) {
 		if (('defineProperty' in Object)) {
 			try {
 				// test it
-				Object.defineProperty(object, 'sentinel1', { value: 1 })
-				return 'sentinel1' in object;
+				Object.defineProperty(object, 'sentinel1', { value: true })
+				return object['sentinel1'] === true;
 			}
 			catch (ex) { /* squelch */ }
 		}
@@ -238,8 +238,8 @@ define(function (require) {
 		if (('defineProperties' in Object)) {
 			try {
 				// test it
-				Object.defineProperties(object, { 'sentinel2': { value: 1 } })
-				return 'sentinel2' in object;
+				Object.defineProperties(object, { 'sentinel2': { value: true } })
+				return object['sentinel2'] === true;
 			}
 			catch (ex) { /* squelch */ }
 		}
