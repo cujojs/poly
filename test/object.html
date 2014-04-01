@@ -267,6 +267,18 @@ curl(['test/testutils', 'poly/object', 'domReady!'], function (tester) {
 			});
 			return test.foo == 5 && test.bar == 27;
 		});
+		tester.assertTrue("Object.defineProperties should define the prototype property correctly", function () {
+			function fn() {};
+
+			Object.defineProperties(fn, {
+				prototype: {
+					value: {
+						test: true
+					}
+				}
+			});
+			return fn.prototype.test === true && (new fn).test === true;
+		});
 
 		// test getOwnPropertyDescriptor
 		tester.assertTrue('Object.getOwnPropertyDescriptor should return a factual descriptor object', function () {
