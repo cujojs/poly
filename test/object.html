@@ -258,6 +258,13 @@ curl(['test/testutils', 'poly/object', 'domReady!'], function (tester) {
 			Object.defineProperty(test, 'foo', { value: 5 });
 			return test.foo == 5;
 		});
+		tester.assertTrue("Object.defineProperty should define the prototype property correctly", function () {
+			function fn() {};
+
+			Object.defineProperty(fn, 'prototype', { value: { test: true } });
+
+			return fn.prototype.test === true && (new fn).test === true;
+		});
 		tester.assertTrue('Object.defineProperties should add several properties', function () {
 			var test = {};
 			// writable and get don't actually work, just putting them in here
