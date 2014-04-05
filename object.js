@@ -231,7 +231,7 @@ define(function (require) {
 		if (('defineProperty' in Object)) {
 			try {
 				// test it
-				Object.defineProperty(object, prop, descriptor)
+				Object.defineProperty(object, prop, descriptor);
 				return object[prop] === descriptor.value;
 			}
 			catch (ex) { /* squelch */ }
