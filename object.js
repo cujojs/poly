@@ -195,20 +195,34 @@ define(function (require) {
 			= getOwnPropertyNames;
 	}
 
-	if (!has('object-defineproperties-obj') || !has('object-defineproperties-function')) {
+	if (!has('object-defineproperties-obj')) {
 		// check if dom has it (IE8)
 		Object.defineProperties = shims.defineProperties
 			= has('object-defineproperties-dom')
 				? useNativeForDom(Object.defineProperties, defineProperties)
 				: defineProperties;
 	}
+	else {
+		// check if it can assign a value to a function's prototype
+		Object.defineProperties = shims.defineProperties
+			= has('object-defineproperties-function')
+				? Object.defineProperties
+				: definePropertiesFunctionPrototype;
+	}
 
-	if (!has('object-defineproperty-obj') || !has('object-defineproperty-function')) {
+	if (!has('object-defineproperty-obj')) {
 		// check if dom has it (IE8)
 		Object.defineProperty = shims.defineProperty
 			= has('object-defineproperty-dom')
 				? useNativeForDom(Object.defineProperty, defineProperty)
 				: defineProperty;
+	}
+	else {
+		// check if it can assign a value to a function's prototype
+		Object.defineProperty = shims.defineProperty
+			= has('object-defineproperty-function')
+				? Object.defineProperty
+				: definePropertyFunctionPrototype;
 	}
 
 	if (!has('object-isextensible')) {
@@ -314,18 +328,34 @@ define(function (require) {
 		return obj;
 	}
 
-	function defineProperties (object, descriptors) {
+	function forEachDescriptor (fn, object, descriptors) {
 		var names, name;
 		names = keys(descriptors);
 		while ((name = names.pop())) {
-			Object.defineProperty(object, name, descriptors[name]);
+			fn(object, name, descriptors[name]);
 		}
 		return object;
+	}
+
+	function defineProperties (object, descriptors) {
+		return forEachDescriptor(Object.defineProperty, object, descriptors);
+	}
+
+	function definePropertiesFunctionPrototype (fn, descriptors) {
+		return (!!descriptors['prototype'] && typeof fn === 'function')
+			? forEachDescriptor(definePropertyFunctionPrototype, fn, descriptors)	// use shim
+			: Object.defineProperties(fn, descriptors);	// use native
 	}
 
 	function defineProperty (object, name, descriptor) {
 		object[name] = descriptor && descriptor.value;
 		return object;
+	}
+
+	function definePropertyFunctionPrototype (fn, name, descriptor) {
+		return (name === 'prototype' && typeof fn === 'function')
+			? defineProperty(fn, name, descriptor)	// use shim
+			: Object.defineProperty(fn, name, descriptor);	// use native
 	}
 
 	function getOwnPropertyDescriptor (object, name) {
