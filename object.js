@@ -204,10 +204,10 @@ define(function (require) {
 	}
 	else {
 		// check if it can assign a value to a function's prototype
-		Object.defineProperties = shims.defineProperties
-			= has('object-defineproperties-function')
-				? Object.defineProperties
-				: definePropertiesFunctionPrototype;
+		if (!has('object-defineproperties-function')) {
+			Object.defineProperties = shims.defineProperties
+				= definePropertiesFunctionPrototype(Object.defineProperties, defineProperties);
+		}
 	}
 
 	if (!has('object-defineproperty-obj')) {
@@ -219,10 +219,10 @@ define(function (require) {
 	}
 	else {
 		// check if it can assign a value to a function's prototype
-		Object.defineProperty = shims.defineProperty
-			= has('object-defineproperty-function')
-				? Object.defineProperty
-				: definePropertyFunctionPrototype;
+		if (!has('object-defineproperty-function')) {
+			Object.defineProperty = shims.defineProperty
+				= definePropertyFunctionPrototype(Object.defineProperty, defineProperty);
+		}
 	}
 
 	if (!has('object-isextensible')) {
@@ -328,23 +328,21 @@ define(function (require) {
 		return obj;
 	}
 
-	function forEachDescriptor (fn, object, descriptors) {
+	function defineProperties (object, descriptors) {
 		var names, name;
 		names = keys(descriptors);
 		while ((name = names.pop())) {
-			fn(object, name, descriptors[name]);
+			Object.defineProperty(object, name, descriptors[name]);
 		}
 		return object;
 	}
 
-	function defineProperties (object, descriptors) {
-		return forEachDescriptor(Object.defineProperty, object, descriptors);
-	}
-
-	function definePropertiesFunctionPrototype (fn, descriptors) {
-		return (!!descriptors['prototype'] && typeof fn === 'function')
-			? forEachDescriptor(definePropertyFunctionPrototype, fn, descriptors)	// use shim
-			: Object.defineProperties(fn, descriptors);	// use native
+	function definePropertiesFunctionPrototype (orig, shim) {
+		return function (object, descriptors) {
+			return (!!descriptors['prototype'] && typeof object === 'function')
+				? shim.apply(this, arguments)	// use shim
+				: orig.apply(this, arguments);	// use native
+		};
 	}
 
 	function defineProperty (object, name, descriptor) {
@@ -352,10 +350,12 @@ define(function (require) {
 		return object;
 	}
 
-	function definePropertyFunctionPrototype (fn, name, descriptor) {
-		return (name === 'prototype' && typeof fn === 'function')
-			? defineProperty(fn, name, descriptor)	// use shim
-			: Object.defineProperty(fn, name, descriptor);	// use native
+	function definePropertyFunctionPrototype (orig, shim) {
+		return function (object, name, descriptor) {
+			return (name === 'prototype' && typeof object === 'function')
+				? shim.apply(this, arguments)	// use shim
+				: orig.apply(this, arguments);	// use native
+		};
 	}
 
 	function getOwnPropertyDescriptor (object, name) {
