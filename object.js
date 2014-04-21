@@ -120,16 +120,22 @@ define(function (require) {
 		'object-isextensible': 'isExtensible',
 		'object-preventextensions': 'preventExtensions',
 		'object-defineproperty-obj': function () {
-			return hasDefineProperty({});
+			return hasDefineProperty({}, 'sentinel1', { value: true });
 		},
 		'object-defineproperty-dom': function () {
-			return doc && hasDefineProperty(testEl);
+			return doc && hasDefineProperty(testEl, 'sentinel1', { value: true });
+		},
+		'object-defineproperty-function': function () {
+			return hasDefineProperty(function () {}, 'prototype', { value: { test: true } });
 		},
 		'object-defineproperties-obj': function () {
-			return hasDefineProperties({});
+			return hasDefineProperties({}, { 'sentinel2': { value: true } });
 		},
 		'object-defineproperties-dom': function () {
-			return doc && hasDefineProperties(testEl);
+			return doc && hasDefineProperties(testEl, { 'sentinel2': { value: true } });
+		},
+		'object-defineproperties-function': function () {
+			return hasDefineProperties(function () {}, { 'prototype': { value: { test: true } } });
 		},
 		'object-getownpropertydescriptor-obj': function () {
 			return hasGetOwnPropertyDescriptor({});
@@ -196,6 +202,13 @@ define(function (require) {
 				? useNativeForDom(Object.defineProperties, defineProperties)
 				: defineProperties;
 	}
+	else {
+		// check if it can assign a value to a function's prototype
+		if (!has('object-defineproperties-function')) {
+			Object.defineProperties = shims.defineProperties
+				= definePropertiesFunctionPrototype(Object.defineProperties, defineProperties);
+		}
+	}
 
 	if (!has('object-defineproperty-obj')) {
 		// check if dom has it (IE8)
@@ -203,6 +216,13 @@ define(function (require) {
 			= has('object-defineproperty-dom')
 				? useNativeForDom(Object.defineProperty, defineProperty)
 				: defineProperty;
+	}
+	else {
+		// check if it can assign a value to a function's prototype
+		if (!has('object-defineproperty-function')) {
+			Object.defineProperty = shims.defineProperty
+				= definePropertyFunctionPrototype(Object.defineProperty, defineProperty);
+		}
 	}
 
 	if (!has('object-isextensible')) {
@@ -221,12 +241,12 @@ define(function (require) {
 				: getOwnPropertyDescriptor;
 	}
 
-	function hasDefineProperty (object) {
+	function hasDefineProperty (object, prop, descriptor) {
 		if (('defineProperty' in Object)) {
 			try {
 				// test it
-				Object.defineProperty(object, 'sentinel1', { value: true })
-				return object['sentinel1'] === true;
+				Object.defineProperty(object, prop, descriptor);
+				return object[prop] === descriptor.value;
 			}
 			catch (ex) { /* squelch */ }
 		}
@@ -234,12 +254,21 @@ define(function (require) {
 
 	// Note: MSDN docs say that IE8 has this function, but tests show
 	// that it does not! JMH
-	function hasDefineProperties (object) {
+	function hasDefineProperties (object, props) {
+		var keys, property;
+
 		if (('defineProperties' in Object)) {
 			try {
 				// test it
-				Object.defineProperties(object, { 'sentinel2': { value: true } })
-				return object['sentinel2'] === true;
+				Object.defineProperties(object, props);
+				keys = _keys(props);
+
+				while (property = keys.pop()) {
+					if (object[property] !== props[property].value) {
+						return false;
+					}
+				}
+				return true;
 			}
 			catch (ex) { /* squelch */ }
 		}
@@ -308,9 +337,25 @@ define(function (require) {
 		return object;
 	}
 
+	function definePropertiesFunctionPrototype (orig, shim) {
+		return function (object, descriptors) {
+			return (!!descriptors['prototype'] && typeof object === 'function')
+				? shim.apply(this, arguments)	// use shim
+				: orig.apply(this, arguments);	// use native
+		};
+	}
+
 	function defineProperty (object, name, descriptor) {
 		object[name] = descriptor && descriptor.value;
 		return object;
+	}
+
+	function definePropertyFunctionPrototype (orig, shim) {
+		return function (object, name, descriptor) {
+			return (name === 'prototype' && typeof object === 'function')
+				? shim.apply(this, arguments)	// use shim
+				: orig.apply(this, arguments);	// use native
+		};
 	}
 
 	function getOwnPropertyDescriptor (object, name) {
