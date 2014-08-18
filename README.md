@@ -3,7 +3,7 @@ Code to modern standards. Run everywhere.
 
 License: MIT
 
-poly.js is the a collection of UMD modules that shim (aka "polyfill")
+poly.js is a collection of UMD modules that shim (aka "polyfill")
 old browsers to support modern (aka "ES5-ish") javascript.
 
 poly.js is unique amongst ES5-ish shims because it:
