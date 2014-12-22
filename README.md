@@ -337,6 +337,17 @@ if (typeof "".trim != 'function') {
 curl({ preloads: preloads });
 ```
 
+Can I use poly without a module loader?
+---
+
+Yes.  You can use [browserify](http://browserify.org) to turn poly's modules into a single file that doesn't require a module loader.  Here's a simple example of how to browserify all of the ES5 polyfills into a file named "poly-es5.browserify.js":
+
+```
+browserify -s 'poly' es5.js -o poly-es5.browserify.js
+```
+
+See the browserify [documentation](http://browserify.org) for more options and use cases.
+
 JSON3
 ===
 
