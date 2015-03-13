@@ -1,7 +1,7 @@
 {
     "name": "poly",
     "version": "0.6.0",
-    "description": "poly.js is the a collection of UMD modules that shim (aka \"polyfill\") old environments to support modern (aka \"ES5-ish\" and \"ES6-ish\") javascript.",
+    "description": "poly.js is the a collection of UMD modules that shim (aka \"polyfill\") old environments to support modern (aka \"ES5-ish\" and \"ES6-ish\") javascript. (Previous poly module can be found as poly.shell)",
     "keywords": ["poly", "cujo", "es5", "es6", "shim", "array", "object", "string", "function", "xhr", "json"],
     "licenses": [
         {

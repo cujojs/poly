@@ -353,3 +353,10 @@ JSON3
 
 JSON support via Kit Cambridge's JSON3 lib at:
 https://github.com/bestiejs/json3.git
+
+Looking for the previous module?
+---
+
+Thanks to the generosity of @mikkelfj, we were able to obtain the `poly` package name on `npm`.
+If you are looking for the previous module, you can find it as
+[poly.shell](https://www.npmjs.com/package/poly.shell) on `npm`.
