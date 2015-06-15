@@ -259,7 +259,7 @@ define(function (require) {
 
 	// for better compression
 	function hasProp (object, name) {
-		return object.hasOwnProperty(name);
+		return refProto.hasOwnProperty.call(object, name);
 	}
 
 	function _keys (object) {
