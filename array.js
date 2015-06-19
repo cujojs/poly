@@ -84,7 +84,7 @@ define(function (require) {
 	if (!has('array-some')) {
 		proto.some = function some (lambda) {
 			// arguments[+1] is to fool google closure compiler into NOT adding a function argument!
-			return array.iterate(this, lambda, function (val) { return !val; }, arguments[+1]);
+			return !array.iterate(this, lambda, function (val) { return !val; }, arguments[+1]);
 		};
 	}
 
