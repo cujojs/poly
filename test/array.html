@@ -90,6 +90,43 @@ curl(['test/testutils', 'poly/array', 'domReady!'], function (tester) {
 				return typeof [][m] == 'function';
 			});
 		}
+		
+		// test some/every
+		// some/every helper
+		function isGreaterThanFive(a) {
+			return a > 5;
+		}
+		tester.assertEquals('some handles empty array', function() {
+			return [].some(isGreaterThanFive);
+		}, false);
+
+		tester.assertEquals('some hits nothing', function() {
+			return [1, 2, 3].some(isGreaterThanFive);
+		}, false);
+
+		tester.assertEquals('some hits some items', function() {
+			return [1, 2, 7].some(isGreaterThanFive);
+		}, true);
+
+		tester.assertEquals('some hits all items', function() {
+			return [6, 7, 8].some(isGreaterThanFive);
+		}, true);
+
+		tester.assertEquals('every handles empty array', function() {
+			return [].every(isGreaterThanFive);
+		}, true);
+
+		tester.assertEquals('every hits nothing', function() {
+			return [1, 2, 3].every(isGreaterThanFive);
+		}, false);
+
+		tester.assertEquals('every hits some items', function() {
+			return [1, 2, 7].every(isGreaterThanFive);
+		}, false);
+
+		tester.assertEquals('every hits all items', function() {
+			return [6, 7, 8].every(isGreaterThanFive);
+		}, true);
 
 		// test forEach
 		tester.assertTrue('forEach hits all items', function () {
